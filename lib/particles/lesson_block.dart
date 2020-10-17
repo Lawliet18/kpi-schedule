@@ -9,7 +9,8 @@ class LessonBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color _color = RandomColor().randomColor();
+    Color _color = chooseColor(data);
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.15,
       color: Colors.white,
@@ -84,5 +85,17 @@ class LessonBlock extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Color chooseColor(Lessons data) {
+  if (data.lessonType == 'Лек') {
+    return Colors.red;
+  } else if (data.lessonType == 'Лаб') {
+    return Colors.green;
+  } else if (data.lessonType == 'Прак') {
+    return Colors.blue;
+  } else {
+    return Colors.black;
   }
 }
