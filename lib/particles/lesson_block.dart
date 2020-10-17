@@ -24,20 +24,20 @@ class LessonBlock extends StatelessWidget {
               children: [
                 Text(
                   data.lessonNumber,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 Column(
                   children: [
                     Text(
                       data.timeStart.substring(0, 5),
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 5),
                     Text(
                       data.timeEnd.substring(0, 5),
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -52,7 +52,7 @@ class LessonBlock extends StatelessWidget {
           Container(
             width: MediaQuery.of(context).size.width * 0.795,
             //alignment: Alignment.center,
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.fromLTRB(12, 12, 16, 12),
             child: data.lessonName != 'ВП'
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

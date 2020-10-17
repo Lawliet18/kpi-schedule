@@ -24,7 +24,7 @@ class SharedPref {
   static Future<String> loadString(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    return sharedPreferences.getString(key);
+    return sharedPreferences.getString(key) ?? '';
   }
 
   static Future<List<String>> loadListString(String key) async {

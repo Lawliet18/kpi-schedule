@@ -21,7 +21,6 @@ class Schedule extends StatelessWidget {
       'Субота'
     ];
     String text = Provider.of<Notifier>(context).groupName;
-
     return DefaultTabController(
         length: list.length,
         child: Scaffold(
@@ -32,10 +31,8 @@ class Schedule extends StatelessWidget {
             actions: [
               IconButton(
                   icon: Icon(Icons.menu),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => Settings()));
-                  }),
+                  onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Settings()))),
             ],
             bottom: PreferredSize(
               child: Container(

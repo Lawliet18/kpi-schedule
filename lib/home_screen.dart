@@ -57,13 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  onSubmit(BuildContext context) {
-    SharedPref.saveString('groups', searchTextField.textField.controller.text);
-    Provider.of<Notifier>(context, listen: false)
-        .addGroupName(searchTextField.textField.controller.text);
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => Schedule()));
-  }
+  onSubmit(BuildContext context) {}
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +118,14 @@ class _HomeScreenState extends State<HomeScreen> {
   RaisedButton buildConfirmButton(BuildContext context) {
     return RaisedButton(
       elevation: 4,
-      onPressed: onSubmit(context),
+      onPressed: () {
+        SharedPref.saveString(
+            'groups', searchTextField.textField.controller.text);
+        Provider.of<Notifier>(context, listen: false)
+            .addGroupName(searchTextField.textField.controller.text);
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Schedule()));
+      },
       color: Color(0xff5422E2),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(25, 15, 25, 15),

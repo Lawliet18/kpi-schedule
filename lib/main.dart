@@ -1,17 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/Models/groups.dart';
+import 'package:schedule_kpi/Models/theme_data.dart';
 import 'package:schedule_kpi/home_screen.dart';
 import 'package:schedule_kpi/http_response/parse_groups.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
+import 'package:schedule_kpi/save_data/theme_notifier.dart';
 import 'package:schedule_kpi/schedule.dart';
 import 'package:schedule_kpi/save_data/shared_prefs.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => Notifier(),
-    child: MyApp(),
-  ));
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPref.loadBool('darkMode').then((value) {
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<Notifier>(create: (context) => Notifier()),
+          ChangeNotifierProvider<ThemeNotifier>(create: (context) {
+            bool darkTheme = value;
+            if (darkTheme == null || darkTheme == false) {
+              return ThemeNotifier(ThemeMode.light);
+            } else {
+              return ThemeNotifier(ThemeMode.dark);
+            }
+          }),
+        ],
+        child: MyApp(),
+      ),
+    );
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -34,22 +51,20 @@ class _MyAppState extends State<MyApp> {
           loadedList.addAll(value);
         }));
     if (groupName != null) {
-      Provider.of<Notifier>(context).addGroupName(groupName);
+      Provider.of<Notifier>(context, listen: false).addGroupName(groupName);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(list);
-    print(groupName);
+    final themeMode = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        fontFamily: 'DniproCity',
-      ),
-      home: groupName == null
+      theme: AppTheme().lightTheme,
+      darkTheme: AppTheme().darkTheme,
+      themeMode: themeMode.themeMode,
+      home: groupName == null || groupName == ''
           ? Container(
               child: loadedList.isEmpty
                   ? FutureBuilder<List<Groups>>(
@@ -60,7 +75,6 @@ class _MyAppState extends State<MyApp> {
                           for (var value in data) {
                             list.add(value.groupFullName);
                           }
-                          print(list);
                           SharedPref.saveListString('list_groups', list);
                           return HomeScreen(
                             groups: list,
