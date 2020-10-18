@@ -7,8 +7,9 @@ import 'package:schedule_kpi/save_data/shared_prefs.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<String> groups;
+  final String currentWeek;
 
-  const HomeScreen({Key key, this.groups}) : super(key: key);
+  const HomeScreen({Key key, this.groups, this.currentWeek}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -123,8 +124,10 @@ class _HomeScreenState extends State<HomeScreen> {
             'groups', searchTextField.textField.controller.text);
         Provider.of<Notifier>(context, listen: false)
             .addGroupName(searchTextField.textField.controller.text);
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Schedule()));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => Schedule(
+                  currentWeek: widget.currentWeek,
+                )));
       },
       color: Color(0xff5422E2),
       child: Padding(

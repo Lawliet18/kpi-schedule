@@ -67,7 +67,9 @@ class LessonBlock extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        "Teacher: " + data.teacherName,
+                        "Teacher: " + data.teacherName == ''
+                            ? "¯\_(ツ)_/¯"
+                            : data.teacherName,
                         //style: TextStyle(fontSize: 18),
                       ),
                       Text("Type: " + data.lessonType),
