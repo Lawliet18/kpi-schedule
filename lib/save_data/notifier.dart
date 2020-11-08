@@ -23,8 +23,6 @@ class Notifier with ChangeNotifier {
 
   void removeGroupName() {
     _groupName = '';
-
-    notifyListeners();
   }
 
   void addCurrentWeek(String value) {

@@ -8,7 +8,7 @@ class SharedPref {
 
   static Future<bool> loadBool(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    return sharedPreferences.getBool(key) ?? false;
+    return sharedPreferences?.getBool(key) ?? false;
   }
 
   static saveString(String key, String value) async {
@@ -24,13 +24,13 @@ class SharedPref {
   static Future<String> loadString(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    return sharedPreferences.getString(key) ?? '';
+    return sharedPreferences?.getString(key) ?? '';
   }
 
   static Future<List<String>> loadListString(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    return sharedPreferences.getStringList(key) ?? [];
+    return sharedPreferences?.getStringList(key) ?? [];
   }
 
   static remove(String key) async {

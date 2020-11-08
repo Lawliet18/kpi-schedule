@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:random_color/random_color.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
 
 class LessonBlock extends StatelessWidget {

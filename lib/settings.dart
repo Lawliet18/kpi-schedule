@@ -34,8 +34,8 @@ class Settings extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    SharedPref.remove('groups');
+                  onTap: () async {
+                    await SharedPref.remove('groups');
                     Provider.of<Notifier>(context, listen: false)
                         .removeGroupName();
                     Navigator.of(context)
