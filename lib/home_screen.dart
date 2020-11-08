@@ -15,11 +15,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
-  AutoCompleteTextField searchTextField;
+  GlobalKey<AutoCompleteTextFieldState<String>> key = GlobalKey();
+  AutoCompleteTextField<String> searchTextField;
 
   @override
   void initState() {
+    super.initState();
     searchTextField = AutoCompleteTextField<String>(
       textInputAction: TextInputAction.done,
       submitOnSuggestionTap: true,
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: InputDecoration(
           filled: true,
           hintText: 'ТВ-71',
+          labelText: 'Group',
           hintStyle: TextStyle(fontSize: 18, color: Colors.black54),
           contentPadding: EdgeInsets.all(10),
           enabledBorder: OutlineInputBorder(
@@ -40,7 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none)),
       itemBuilder: (context, item) {
         return Container(
-          child: Text(item),
+          padding: EdgeInsets.all(5.0),
+          child: Text(
+            item,
+            style: TextStyle(fontSize: 14),
+          ),
         );
       },
       itemFilter: (item, query) {
@@ -55,10 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
       key: key,
       suggestions: widget.groups,
     );
-    super.initState();
   }
-
-  onSubmit(BuildContext context) {}
 
   @override
   Widget build(BuildContext context) {
@@ -108,11 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Center buildField(BuildContext context) {
     return Center(
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            //crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-          Column(children: <Widget>[
-            searchTextField,
-          ])
+          Column(
+            children: [
+              searchTextField,
+            ],
+          )
         ]));
   }
 
