@@ -41,16 +41,20 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String groupName;
   String currentWeek;
+  bool isAdded;
   List<String> list = [];
   List<String> loadedList = [];
 
   @override
   void initState() {
     super.initState();
-    SharedPref.loadString('groups').then((value) => setState(() {
-          groupName = value;
-          Provider.of<Notifier>(context, listen: false).addGroupName(value);
-        }));
+    isAdded = false;
+    SharedPref.loadString('groups').then(
+      (value) => setState(() {
+        groupName = value;
+        Provider.of<Notifier>(context, listen: false).addGroupName(value);
+      }),
+    );
     SharedPref.loadListString('list_groups').then((value) => setState(() {
           loadedList.addAll(value);
         }));
@@ -74,21 +78,24 @@ class _MyAppState extends State<MyApp> {
               currentWeek == null ||
               currentWeek == ''
           ? Container(
-              child: loadedList.isEmpty ||
-                      currentWeek == null ||
-                      currentWeek == ''
+              child: loadedList.isEmpty
                   ? FutureBuilder(
                       future: Future.wait([fetchCurrentWeek(), fetchGroups()]),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
                           List<Groups> data = snapshot.data[1];
                           String dataWeek = snapshot.data[0].toString();
-                          for (var value in data) {
-                            list.add(value.groupFullName);
+                          print(data.isEmpty);
+                          if (!isAdded) {
+                            for (var value in data) {
+                              list.add(value.groupFullName);
+                            }
+                            isAdded = true;
+                            SharedPref.saveListString('list_groups', list);
                           }
                           SharedPref.saveString(
                               'current_week', dataWeek.toString());
-                          SharedPref.saveListString('list_groups', list);
+
                           return HomeScreen(
                             groups: list,
                             currentWeek: currentWeek,
