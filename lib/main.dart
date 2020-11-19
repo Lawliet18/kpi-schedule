@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/Models/groups.dart';
 import 'package:schedule_kpi/Models/theme_data.dart';
-import 'package:schedule_kpi/Models/week.dart';
 import 'package:schedule_kpi/home_screen.dart';
 import 'package:schedule_kpi/http_response/parse_current_week.dart';
 import 'package:schedule_kpi/http_response/parse_groups.dart';

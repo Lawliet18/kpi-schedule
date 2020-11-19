@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:schedule_kpi/Models/lessons.dart';
 
-Future<List<Lessons>> fetchLessons(String text) async {
+Future<List> fetchLessons(String text) async {
   List<Lessons> list = [];
   try {
     final response =
@@ -13,11 +13,12 @@ Future<List<Lessons>> fetchLessons(String text) async {
       list.addAll(parsed['data']
           .map<Lessons>((json) => Lessons.fromJson(json))
           .toList());
+      return list;
     }
-    return list;
+    return null;
   } catch (e) {
     print(e);
     print('fecth lessons');
-    return [];
+    return null;
   }
 }

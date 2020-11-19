@@ -67,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(20),
@@ -100,6 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Please input your group',
           ),
           Text('(like in example)'),
+          SizedBox(height: 10),
           buildField(context),
           SizedBox(height: 20),
           buildConfirmButton(context)

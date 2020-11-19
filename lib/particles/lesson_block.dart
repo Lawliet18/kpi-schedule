@@ -71,7 +71,7 @@ class LessonBlock extends StatelessWidget {
                             : data.teacherName,
                         //style: TextStyle(fontSize: 18),
                       ),
-                      Text("Type: " + data.lessonType),
+                      Text("Type: " + data.lessonType.toString()),
                       data.lessonRoom != ''
                           ? Text("Room : " + data.lessonRoom)
                           : Container(),

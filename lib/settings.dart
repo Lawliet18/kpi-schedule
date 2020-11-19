@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/main.dart';
+import 'package:schedule_kpi/save_data/db_lessons.dart';
+import 'package:schedule_kpi/save_data/db_teacher_schedule.dart';
+import 'package:schedule_kpi/save_data/db_teachers.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/save_data/shared_prefs.dart';
 import 'package:schedule_kpi/save_data/theme_notifier.dart';
@@ -35,11 +38,14 @@ class Settings extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () async {
+                    await DBLessons.db.delete();
+                    await DBTeacherSchedule.db.delete();
+                    await DBTeachers.db.delete();
                     await SharedPref.remove('groups');
                     Provider.of<Notifier>(context, listen: false)
                         .removeGroupName();
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => MyApp()));
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => MyApp()));
                   },
                   child: Container(
                     color: Colors.transparent,
