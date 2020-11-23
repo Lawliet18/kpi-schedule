@@ -11,7 +11,7 @@ class TeacherAppBar extends StatelessWidget {
       title: Text(
         'Teachers',
         style: TextStyle(
-          color: Theme.of(context).textSelectionColor,
+          color: Colors.white,
           fontSize: 26,
           letterSpacing: 1.2,
           wordSpacing: 1.2,

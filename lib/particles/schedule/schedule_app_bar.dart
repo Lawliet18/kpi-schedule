@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_kpi/particles/current_week.dart';
 
-import '../settings.dart';
+import '../../settings.dart';
 
 class ScheduleAppBar extends StatelessWidget {
   const ScheduleAppBar({

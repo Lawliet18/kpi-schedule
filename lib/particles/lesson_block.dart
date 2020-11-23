@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
 
 class LessonBlock extends StatelessWidget {
-  const LessonBlock({Key key, this.data}) : super(key: key);
+  const LessonBlock({Key key, @required this.data}) : super(key: key);
 
   final Lessons data;
 
   @override
   Widget build(BuildContext context) {
     Color _color = chooseColor(data);
-
     return Container(
       height: MediaQuery.of(context).size.height * 0.15,
       color: Colors.white,
@@ -51,7 +50,6 @@ class LessonBlock extends StatelessWidget {
           ),
           Container(
             width: MediaQuery.of(context).size.width * 0.795,
-            //alignment: Alignment.center,
             padding: EdgeInsets.fromLTRB(12, 12, 16, 12),
             child: data.lessonName != 'ВП'
                 ? Column(
@@ -66,10 +64,11 @@ class LessonBlock extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        "Teacher: " + data.teacherName == ''
-                            ? "¯\_(ツ)_/¯"
-                            : data.teacherName,
-                        //style: TextStyle(fontSize: 18),
+                        "Teacher: " +
+                            (data.teacherName.isEmpty
+                                ? "Don't know"
+                                : data.teacherName),
+                        style: TextStyle(fontSize: 16),
                       ),
                       Text("Type: " + data.lessonType.toString()),
                       data.lessonRoom != ''

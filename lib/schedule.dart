@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/particles/schedule_app_bar.dart';
-import 'package:schedule_kpi/particles/schedule_body.dart';
-import 'package:schedule_kpi/particles/teacher_app_bar.dart';
-import 'package:schedule_kpi/particles/teacher_body.dart';
+import 'package:schedule_kpi/particles/schedule/schedule_app_bar.dart';
+import 'package:schedule_kpi/particles/schedule/schedule_body.dart';
+import 'package:schedule_kpi/particles/teachers/teacher_app_bar.dart';
+import 'package:schedule_kpi/particles/teachers/teacher_body.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
+
+import 'particles/notes/notes_appbar.dart';
+import 'particles/notes/notes_body.dart';
 
 class Schedule extends StatefulWidget {
   const Schedule({Key key, this.currentWeek}) : super(key: key);
@@ -61,7 +64,7 @@ class _ScheduleState extends State<Schedule>
     _widgetOptionBody = <Widget>[
       ScheduleBody(text: text, list: listRu, controller: _controller),
       TeacherBody(),
-      Text('body'),
+      NotesBody(),
     ];
     _widgetOptionAppBar = <Widget>[
       ScheduleAppBar(
@@ -70,9 +73,7 @@ class _ScheduleState extends State<Schedule>
           list: list,
           controller: _controller),
       TeacherAppBar(),
-      AppBar(
-        title: Text('data'),
-      ),
+      NotesAppBar(),
     ];
 
     super.initState();

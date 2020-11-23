@@ -46,7 +46,7 @@ class DBTeachers with Table {
   }
 
   @override
-  Future<List> select() async {
+  Future<List<Teachers>> select() async {
     final db = await database;
     var res = await db.query(table);
     List<Teachers> list = res.isNotEmpty
