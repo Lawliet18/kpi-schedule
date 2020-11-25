@@ -1,161 +1,213 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
 import 'package:schedule_kpi/particles/lesson_block.dart';
+import 'package:schedule_kpi/save_data/notifier.dart';
 
-class AddingNotes extends StatelessWidget {
+import 'custom_floating_button.dart';
+import 'image_picker.dart';
+
+class AddingNotes extends StatefulWidget {
   const AddingNotes({Key key, this.data}) : super(key: key);
 
   final Lessons data;
+
+  @override
+  _AddingNotesState createState() => _AddingNotesState();
+}
+
+class _AddingNotesState extends State<AddingNotes> {
+  final ImagePicker _picker = ImagePicker();
+  PickedFile _imageFile;
+  dynamic _pickImageError;
+  String _retrieveDataError;
+
+  onImageButtonPressed({BuildContext context}) async {
+    await _displayPickImageDialog(context);
+  }
+
+  selectMethod(ImageSource source) async {
+    try {
+      final pickedFile = await _picker.getImage(
+        source: source,
+      );
+      setState(() {
+        _imageFile = pickedFile;
+      });
+      Provider.of<Notifier>(context, listen: false)
+          .addImagePath(File(_imageFile.path));
+    } catch (e) {
+      setState(() {
+        _pickImageError = e;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Create Notes'),
         ),
-        body: LessonBlock(
-          data: data,
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            children: [
+              LessonBlock(
+                data: widget.data,
+              ),
+              Expanded(
+                child: Consumer<Notifier>(builder: (context, value, child) {
+                  return Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          itemCount: value.textFieldCounter.length,
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            print(value.textFieldCounter[index]);
+                            return value.textFieldCounter[index]
+                                ? Row(
+                                    children: [
+                                      Expanded(child: TextField()),
+                                      IconButton(
+                                          icon:
+                                              Icon(Icons.remove_circle_outline),
+                                          onPressed: () =>
+                                              value.deleteTextField(index))
+                                    ],
+                                  )
+                                : Container();
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        Expanded(
+                          child: FutureBuilder(
+                              future: retrieveLostData(),
+                              builder: (context, snapshot) {
+                                switch (snapshot.connectionState) {
+                                  case ConnectionState.none:
+                                  case ConnectionState.done:
+                                    return GridView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: value.list.length,
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                mainAxisSpacing: 10,
+                                                crossAxisSpacing: 5,
+                                                crossAxisCount: 2),
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            child: Hero(
+                                                tag: _imageFile.path +
+                                                    index.toString(),
+                                                child: Image.file(
+                                                    value.list[index])),
+                                            onTap: () => Navigator.of(context)
+                                                .push(MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        DetailImage(
+                                                          path: _imageFile.path,
+                                                          index: index,
+                                                        ))),
+                                          );
+                                        });
+                                    break;
+                                  default:
+                                    if (snapshot.hasError) {
+                                      return Text(
+                                        'Pick image/video error: ${snapshot.error}}',
+                                        textAlign: TextAlign.center,
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                }
+                              }),
+                        )
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
-        floatingActionButton: CustomFloatingButton());
-  }
-}
-
-class CustomFloatingButton extends StatefulWidget {
-  const CustomFloatingButton({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  _CustomFloatingButtonState createState() => _CustomFloatingButtonState();
-}
-
-class _CustomFloatingButtonState extends State<CustomFloatingButton>
-    with SingleTickerProviderStateMixin {
-  bool isOpened = false;
-  AnimationController _animationController;
-  Animation<Color> _buttonColor;
-  Animation<double> _animateIcon;
-  Animation<double> _translateButton;
-  Curve _curve = Curves.easeOut;
-  double _fabHeight = 56.0;
-
-  @override
-  void initState() {
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500))
-          ..addListener(() {
-            setState(() {});
-          });
-    _animateIcon =
-        Tween<double>(begin: 0, end: 1).animate(_animationController);
-    _buttonColor = ColorTween(begin: Colors.blue, end: Colors.red).animate(
-        CurvedAnimation(
-            parent: _animationController,
-            curve: Interval(0.0, 1.0, curve: Curves.linear)));
-    _translateButton = Tween<double>(begin: _fabHeight, end: -14.0).animate(
-        CurvedAnimation(
-            parent: _animationController,
-            curve: Interval(0, 0.75, curve: _curve)));
-    super.initState();
+        floatingActionButton: CustomFloatingButton(
+            function: () => onImageButtonPressed(context: context)));
   }
 
-  animate() {
-    if (!isOpened) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
+  Future<void> retrieveLostData() async {
+    final LostData response = await _picker.getLostData();
+    if (response.isEmpty) {
+      return;
     }
-    isOpened = !isOpened;
+    if (response.file != null) {
+      setState(() {
+        _imageFile = response.file;
+      });
+    } else {
+      _retrieveDataError = response.exception.code;
+    }
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  Widget add() {
-    return Container(
-      child: FloatingActionButton(
-        elevation: 0,
-        heroTag: 'btnAdd',
-        onPressed: null,
-        tooltip: 'Add',
-        child: Icon(Icons.text_fields),
-      ),
-    );
-  }
-
-  Widget image() {
-    return Container(
-      child: FloatingActionButton(
-        elevation: 0,
-        heroTag: 'btnImage',
-        onPressed: null,
-        tooltip: 'Image',
-        child: Icon(Icons.image),
-      ),
-    );
-  }
-
-  Widget inbox() {
-    return Container(
-      child: FloatingActionButton(
-        elevation: 0,
-        heroTag: 'btnInbox',
-        onPressed: null,
-        tooltip: 'Inbox',
-        child: Icon(Icons.mic),
-      ),
-    );
-  }
-
-  Widget toggle() {
-    return Container(
-      child: FloatingActionButton(
-        elevation: 6,
-        heroTag: 'btnToggle',
-        backgroundColor: _buttonColor.value,
-        onPressed: animate,
-        tooltip: 'Toggle',
-        child: AnimatedIcon(
-          icon: AnimatedIcons.menu_close,
-          progress: _animateIcon,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        Transform(
-          transform: Matrix4.translationValues(
-            0.0,
-            _translateButton.value * 3.0,
-            0.0,
-          ),
-          child: add(),
-        ),
-        Transform(
-          transform: Matrix4.translationValues(
-            0.0,
-            _translateButton.value * 2.0,
-            0.0,
-          ),
-          child: image(),
-        ),
-        Transform(
-          transform: Matrix4.translationValues(
-            0.0,
-            _translateButton.value,
-            0.0,
-          ),
-          child: inbox(),
-        ),
-        toggle(),
-      ],
-    );
+  _displayPickImageDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Add optional parameters'),
+            content: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  GestureDetector(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.camera,
+                          size: 30,
+                        ),
+                        SizedBox(width: 10),
+                        Text("Camera",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w500,
+                            ))
+                      ],
+                    ),
+                    onTap: () => selectMethod(ImageSource.camera),
+                  ),
+                  SizedBox(height: 10),
+                  GestureDetector(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.image,
+                          size: 30,
+                        ),
+                        SizedBox(width: 10),
+                        Text("Gallery",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w500,
+                            ))
+                      ],
+                    ),
+                    onTap: () => selectMethod(ImageSource.gallery),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
