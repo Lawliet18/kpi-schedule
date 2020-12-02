@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/schedule.dart';
@@ -7,16 +8,15 @@ import 'package:schedule_kpi/save_data/shared_prefs.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<String> groups;
-  final String currentWeek;
-
-  const HomeScreen({Key key, this.groups, this.currentWeek}) : super(key: key);
+  const HomeScreen({Key key, this.groups}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  GlobalKey<AutoCompleteTextFieldState<String>> key = GlobalKey();
+  final GlobalKey<AutoCompleteTextFieldState<String>> _key = GlobalKey();
   AutoCompleteTextField<String> searchTextField;
+  bool ifOpen = false;
 
   @override
   void initState() {
@@ -58,8 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
       itemSubmitted: (item) {
         setState(() => searchTextField.textField.controller.text = item);
       },
-      key: key,
+      key: _key,
       suggestions: widget.groups,
+    );
+
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        ifOpen = visible;
+        print(ifOpen);
+      },
     );
   }
 
@@ -74,14 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                SizedBox(height: 60),
-                Image(image: AssetImage("assets/img/logo.png")),
+                !ifOpen ? SizedBox(height: 60) : Container(),
+                !ifOpen
+                    ? Image(image: AssetImage("assets/img/logo.png"))
+                    : Container(),
                 SizedBox(height: 10),
-                Text(
+                const Text(
                   'KPI Schedule',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: !ifOpen ? 40 : 20),
                 buildTextField(
                   context,
                 )
@@ -97,10 +106,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Please input your group',
+          const Text(
+            'Please input your group\n(like in example)',
           ),
-          Text('(like in example)'),
           SizedBox(height: 10),
           buildField(context),
           SizedBox(height: 20),
@@ -110,11 +118,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Center buildField(BuildContext context) {
-    return Center(
-        child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
+  Padding buildField(BuildContext context) {
+    return Padding(
+        padding: MediaQuery.of(context).viewPadding,
+        child: Column(children: <Widget>[
           Column(
             children: [
               searchTextField,
@@ -131,10 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
             'groups', searchTextField.textField.controller.text);
         Provider.of<Notifier>(context, listen: false)
             .addGroupName(searchTextField.textField.controller.text);
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => Schedule(
-                  currentWeek: widget.currentWeek,
-                )));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => Schedule()));
       },
       color: Color(0xff5422E2),
       child: Padding(

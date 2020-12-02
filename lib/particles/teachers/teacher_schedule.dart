@@ -50,9 +50,7 @@ class _TeacherScheduleWidgetState extends State<TeacherScheduleWidget> {
               ),
             ),
             SizedBox(width: 10),
-            CurrentWeek(
-              currentWeek: currentWeek,
-            ),
+            CurrentWeek(),
           ],
         ),
         centerTitle: true,

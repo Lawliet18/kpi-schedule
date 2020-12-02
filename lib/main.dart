@@ -67,53 +67,53 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     final themeMode = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme().lightTheme,
-      darkTheme: AppTheme().darkTheme,
-      themeMode: themeMode.themeMode,
-      home: groupName == null ||
-              groupName == '' ||
-              currentWeek == null ||
-              currentWeek == ''
-          ? Container(
-              child: loadedList.isEmpty
-                  ? FutureBuilder(
-                      future: Future.wait([fetchCurrentWeek(), fetchGroups()]),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (snapshot.hasData) {
-                          List<Groups> data = snapshot.data[1];
-                          String dataWeek = snapshot.data[0].toString();
-                          print(data.isEmpty);
-                          if (!isAdded) {
-                            for (var value in data) {
-                              list.add(value.groupFullName);
-                            }
-                            isAdded = true;
-                            SharedPref.saveListString('list_groups', list);
-                          }
-                          SharedPref.saveString(
-                              'current_week', dataWeek.toString());
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme().lightTheme,
+        darkTheme: AppTheme().darkTheme,
+        themeMode: themeMode.themeMode,
+        //   home: groupName == null ||
+        //           groupName == '' ||
+        //           currentWeek == null ||
+        //           currentWeek == ''
+        //       ? Container(
+        //           child: loadedList.isEmpty
+        //               ? FutureBuilder(
+        //                   future: Future.wait([fetchCurrentWeek(), fetchGroups()]),
+        //                   builder: (BuildContext context, AsyncSnapshot snapshot) {
+        //                     if (snapshot.hasData) {
+        //                       List<Groups> data = snapshot.data[1];
+        //                       String dataWeek = snapshot.data[0].toString();
+        //                       if (!isAdded) {
+        //                         for (var value in data) {
+        //                           list.add(value.groupFullName);
+        //                         }
+        //                         isAdded = true;
+        //                         SharedPref.saveListString('list_groups', list);
+        //                       }
+        //                       SharedPref.saveString(
+        //                           'current_week', dataWeek.toString());
 
-                          return HomeScreen(
-                            groups: list,
-                            currentWeek: currentWeek,
-                          );
-                        } else {
-                          return Scaffold(
-                            body: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
-                      },
-                    )
-                  : HomeScreen(
-                      groups: loadedList,
-                      currentWeek: currentWeek,
-                    ),
-            )
-          : Schedule(currentWeek: currentWeek),
-    );
+        //                       return HomeScreen(
+        //                         groups: list,
+        //                       );
+        //                     } else {
+        //                       return Scaffold(
+        //                         body: Center(
+        //                           child: CircularProgressIndicator(),
+        //                         ),
+        //                       );
+        //                     }
+        //                   },
+        //                 )
+        //               : HomeScreen(
+        //                   groups: loadedList,
+        //                 ),
+        //         )
+        //       : Schedule(),
+        // );
+        home: HomeScreen(
+          groups: loadedList,
+        ));
   }
 }

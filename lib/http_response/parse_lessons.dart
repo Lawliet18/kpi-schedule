@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:schedule_kpi/Models/lessons.dart';
 
-Future<List> fetchLessons(String text) async {
+Future<List<Lessons>> fetchLessons(String text) async {
   List<Lessons> list = [];
   try {
     final response =

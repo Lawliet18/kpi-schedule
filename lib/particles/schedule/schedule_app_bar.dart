@@ -6,13 +6,11 @@ import '../../settings.dart';
 class ScheduleAppBar extends StatelessWidget {
   const ScheduleAppBar({
     Key key,
-    @required this.currentWeek,
     @required this.text,
     @required this.list,
     @required this.controller,
   }) : super(key: key);
 
-  final String currentWeek;
   final String text;
   final List<String> list;
   final TabController controller;
@@ -24,7 +22,7 @@ class ScheduleAppBar extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CurrentWeek(currentWeek: currentWeek),
+          CurrentWeek(),
           Spacer(),
           Text('Schedule for ' + text.toUpperCase()),
           Spacer()

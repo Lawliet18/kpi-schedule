@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
 import 'package:schedule_kpi/particles/lesson_block.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 
 import 'custom_floating_button.dart';
+import 'detail_image.dart';
 import 'image_picker.dart';
 
 class AddingNotes extends StatefulWidget {
@@ -20,32 +20,6 @@ class AddingNotes extends StatefulWidget {
 }
 
 class _AddingNotesState extends State<AddingNotes> {
-  final ImagePicker _picker = ImagePicker();
-  PickedFile _imageFile;
-  dynamic _pickImageError;
-  String _retrieveDataError;
-
-  onImageButtonPressed({BuildContext context}) async {
-    await _displayPickImageDialog(context);
-  }
-
-  selectMethod(ImageSource source) async {
-    try {
-      final pickedFile = await _picker.getImage(
-        source: source,
-      );
-      setState(() {
-        _imageFile = pickedFile;
-      });
-      Provider.of<Notifier>(context, listen: false)
-          .addImagePath(File(_imageFile.path));
-    } catch (e) {
-      setState(() {
-        _pickImageError = e;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,155 +33,109 @@ class _AddingNotesState extends State<AddingNotes> {
               LessonBlock(
                 data: widget.data,
               ),
-              Expanded(
-                child: Consumer<Notifier>(builder: (context, value, child) {
-                  return Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Column(
-                      children: [
-                        ListView.builder(
-                          itemCount: value.textFieldCounter.length,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            print(value.textFieldCounter[index]);
-                            return value.textFieldCounter[index]
-                                ? Row(
-                                    children: [
-                                      Expanded(child: TextField()),
-                                      IconButton(
-                                          icon:
-                                              Icon(Icons.remove_circle_outline),
-                                          onPressed: () =>
-                                              value.deleteTextField(index))
-                                    ],
-                                  )
-                                : Container();
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        Expanded(
-                          child: FutureBuilder(
-                              future: retrieveLostData(),
-                              builder: (context, snapshot) {
-                                switch (snapshot.connectionState) {
-                                  case ConnectionState.none:
-                                  case ConnectionState.done:
-                                    return GridView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: value.list.length,
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                                mainAxisSpacing: 10,
-                                                crossAxisSpacing: 5,
-                                                crossAxisCount: 2),
-                                        itemBuilder: (context, index) {
-                                          return GestureDetector(
-                                            child: Hero(
-                                                tag: _imageFile.path +
-                                                    index.toString(),
-                                                child: Image.file(
-                                                    value.list[index])),
-                                            onTap: () => Navigator.of(context)
-                                                .push(MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DetailImage(
-                                                          path: _imageFile.path,
-                                                          index: index,
-                                                        ))),
-                                          );
-                                        });
-                                    break;
-                                  default:
-                                    if (snapshot.hasError) {
-                                      return Text(
-                                        'Pick image/video error: ${snapshot.error}}',
-                                        textAlign: TextAlign.center,
-                                      );
-                                    } else {
-                                      return Container();
-                                    }
-                                }
-                              }),
-                        )
-                      ],
-                    ),
-                  );
-                }),
-              ),
+              Expanded(child: BuildListOfData())
             ],
           ),
         ),
-        floatingActionButton: CustomFloatingButton(
-            function: () => onImageButtonPressed(context: context)));
+        bottomNavigationBar: Container(
+          margin: EdgeInsets.only(left: 50, right: 50, bottom: 10),
+          child: FlatButton(
+              minWidth: 100,
+              color: Colors.redAccent,
+              disabledColor: Colors.grey,
+              disabledTextColor: Colors.black45,
+              hoverColor: Colors.greenAccent,
+              onPressed: _saveNotes(),
+              child: Text(
+                "Save",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              )),
+        ),
+        floatingActionButton: CustomFloatingButton());
   }
 
-  Future<void> retrieveLostData() async {
-    final LostData response = await _picker.getLostData();
-    if (response.isEmpty) {
-      return;
-    }
-    if (response.file != null) {
-      setState(() {
-        _imageFile = response.file;
-      });
-    } else {
-      _retrieveDataError = response.exception.code;
-    }
+  _saveNotes() {
+    return null;
   }
+}
 
-  _displayPickImageDialog(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Add optional parameters'),
-            content: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  GestureDetector(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.camera,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text("Camera",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                            ))
-                      ],
-                    ),
-                    onTap: () => selectMethod(ImageSource.camera),
-                  ),
-                  SizedBox(height: 10),
-                  GestureDetector(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.image,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text("Gallery",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                            ))
-                      ],
-                    ),
-                    onTap: () => selectMethod(ImageSource.gallery),
-                  )
-                ],
-              ),
+class BuildListOfData extends StatelessWidget {
+  const BuildListOfData({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<Notifier>(builder: (context, value, child) {
+      return Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: ListView(
+          children: [
+            ListView.builder(
+              itemCount: value.textFieldCounter.length,
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return value.textFieldCounter[index]
+                    ? Row(
+                        children: [
+                          Expanded(child: TextField()),
+                          IconButton(
+                              icon: Icon(Icons.remove_circle_outline),
+                              onPressed: () => value.deleteTextField(index))
+                        ],
+                      )
+                    : Container();
+              },
             ),
-          );
-        });
+            SizedBox(height: 20),
+            FutureBuilder(
+                future: CustomImagePicker.imagePicker.retrieveLostData(),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.done:
+                      return GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: value.list.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  mainAxisSpacing: 10,
+                                  crossAxisSpacing: 5,
+                                  crossAxisCount: 2),
+                          itemBuilder: (context, index) {
+                            return value.list.isNotEmpty
+                                ? GestureDetector(
+                                    child: Hero(
+                                        tag: value.list[index] +
+                                            index.toString(),
+                                        child: Image.file(
+                                            File(value.list[index]))),
+                                    onTap: () => Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (context) => DetailImage(
+                                                  path: value.list[index],
+                                                  index: index,
+                                                ))),
+                                  )
+                                : Container();
+                          });
+                      break;
+                    default:
+                      if (snapshot.hasError) {
+                        return Text(
+                          'Pick image/video error: ${snapshot.error}}',
+                          textAlign: TextAlign.center,
+                        );
+                      } else {
+                        return Container();
+                      }
+                  }
+                })
+          ],
+        ),
+      );
+    });
   }
 }

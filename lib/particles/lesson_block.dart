@@ -10,7 +10,7 @@ class LessonBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     Color _color = chooseColor(data);
     return Container(
-      height: MediaQuery.of(context).size.height * 0.15,
+      //height: MediaQuery.of(context).size.height * 0.15,
       color: Colors.white,
       margin: EdgeInsets.only(top: 5.0),
       child: Row(
@@ -48,39 +48,41 @@ class LessonBlock extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.005,
             color: _color,
           ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.795,
-            padding: EdgeInsets.fromLTRB(12, 12, 16, 12),
-            child: data.lessonName != 'ВП'
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        data.lessonName,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        "Teacher: " +
-                            (data.teacherName.isEmpty
-                                ? "Don't know"
-                                : data.teacherName),
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Text("Type: " + data.lessonType.toString()),
-                      data.lessonRoom != ''
-                          ? Text("Room : " + data.lessonRoom)
-                          : Container(),
-                    ],
-                  )
-                : Center(
-                    child: Text(
-                    data.lessonName,
-                    style: TextStyle(fontSize: 30),
-                  )),
+          Expanded(
+            child: Padding(
+              //width: MediaQuery.of(context).size.width * 0.795,
+              padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
+              child: data.lessonName != 'ВП'
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          data.lessonName,
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          "Teacher: " +
+                              (data.teacherName.isEmpty
+                                  ? "Don't know"
+                                  : data.teacherName),
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text("Type: " + data.lessonType.toString()),
+                        data.lessonRoom != ''
+                            ? Text("Room : " + data.lessonRoom)
+                            : Container(),
+                      ],
+                    )
+                  : Center(
+                      child: Text(
+                      data.lessonName,
+                      style: TextStyle(fontSize: 30),
+                    )),
+            ),
           ),
         ],
       ),

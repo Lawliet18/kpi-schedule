@@ -11,9 +11,7 @@ import 'particles/notes/notes_appbar.dart';
 import 'particles/notes/notes_body.dart';
 
 class Schedule extends StatefulWidget {
-  const Schedule({Key key, this.currentWeek}) : super(key: key);
-
-  final String currentWeek;
+  const Schedule({Key key}) : super(key: key);
 
   @override
   _ScheduleState createState() => _ScheduleState();
@@ -43,23 +41,15 @@ class _ScheduleState extends State<Schedule>
   List<Widget> _widgetOptionBody;
   List<Widget> _widgetOptionAppBar;
   TabController _controller;
-  String currentWeek;
   int currentDay = DateTime.now().weekday;
   @override
   void initState() {
     imgOnErrorLoad = SvgPicture.asset('assets/img/sad_smile.svg');
     _selectedValue = 0;
-    currentWeek = widget.currentWeek;
 
     if (currentDay == 7) currentDay = 1;
     _controller = TabController(
         length: list.length, vsync: this, initialIndex: currentDay - 1);
-
-    // _controller.addListener(() {
-    //   setState(() {
-    //     currentDay = _controller.index;
-    //   });
-    // });
     text = Provider.of<Notifier>(context, listen: false).groupName;
     _widgetOptionBody = <Widget>[
       ScheduleBody(text: text, list: listRu, controller: _controller),
@@ -67,11 +57,7 @@ class _ScheduleState extends State<Schedule>
       NotesBody(),
     ];
     _widgetOptionAppBar = <Widget>[
-      ScheduleAppBar(
-          currentWeek: currentWeek,
-          text: text,
-          list: list,
-          controller: _controller),
+      ScheduleAppBar(text: text, list: list, controller: _controller),
       TeacherAppBar(),
       NotesAppBar(),
     ];

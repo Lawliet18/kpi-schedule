@@ -16,7 +16,7 @@ class Settings extends StatelessWidget {
     final themeMode = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
         centerTitle: true,
       ),
       body: Column(
@@ -49,7 +49,7 @@ class Settings extends StatelessWidget {
                   },
                   child: Container(
                     color: Colors.transparent,
-                    child: Text(
+                    child: const Text(
                       'Change',
                       style: TextStyle(
                         color: Colors.redAccent,

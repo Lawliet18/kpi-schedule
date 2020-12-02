@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 
 class CurrentWeek extends StatefulWidget {
-  const CurrentWeek({Key key, this.currentWeek}) : super(key: key);
-  final currentWeek;
+  const CurrentWeek({Key key}) : super(key: key);
 
   @override
   _CurrentWeekState createState() => _CurrentWeekState();
@@ -14,8 +13,8 @@ class _CurrentWeekState extends State<CurrentWeek> {
   String current;
   @override
   void initState() {
+    current = Provider.of<Notifier>(context, listen: false).week ?? '1';
     super.initState();
-    current = widget.currentWeek;
   }
 
   @override

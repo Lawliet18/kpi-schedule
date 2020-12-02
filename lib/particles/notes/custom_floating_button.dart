@@ -1,14 +1,14 @@
+import 'package:audio_recorder/audio_recorder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/particles/notes/adding_notes.dart';
+import 'package:schedule_kpi/particles/notes/image_picker.dart';
+import 'package:schedule_kpi/particles/notes/voice_recoder.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 
 class CustomFloatingButton extends StatefulWidget {
   const CustomFloatingButton({
     Key key,
-    this.function,
   }) : super(key: key);
-  final Function() function;
   @override
   _CustomFloatingButtonState createState() => _CustomFloatingButtonState();
 }
@@ -76,7 +76,8 @@ class _CustomFloatingButtonState extends State<CustomFloatingButton>
       child: FloatingActionButton(
         elevation: 0,
         heroTag: 'btnImage',
-        onPressed: widget.function,
+        onPressed: () =>
+            CustomImagePicker.imagePicker.onImageButtonPressed(context),
         tooltip: 'Image',
         child: Icon(Icons.image),
       ),
@@ -88,7 +89,8 @@ class _CustomFloatingButtonState extends State<CustomFloatingButton>
       child: FloatingActionButton(
         elevation: 0,
         heroTag: 'btnInbox',
-        onPressed: null,
+        onPressed: () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => VoiceRecorder())),
         tooltip: 'Microphone',
         child: Icon(Icons.mic),
       ),

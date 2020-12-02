@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -37,48 +38,65 @@ class _ScheduleBodyState extends State<ScheduleBody> {
   Widget build(BuildContext context) {
     return FutureBuilder<List<Lessons>>(
       future: DBLessons.db.select(),
-      builder: (context, AsyncSnapshot<List<Lessons>> snapshot) {
-        if (!snapshot.hasData) {
+      builder: (context, AsyncSnapshot<List<Lessons>> snapshotFromDataBase) {
+        if (!snapshotFromDataBase.hasData) {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
-        return snapshot.connectionState == ConnectionState.done &&
-                snapshot.data.isEmpty
-            ? FutureBuilder(
-                future: fetchLessons(widget.text),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  List<Lessons> data = snapshot.data;
-                  if (data == null)
-                    return buildOnWrongFuture(
-                        context,
-                        'Cannot load your schedule.\nPlease check your internet connection.',
-                        true,
-                        imgOnErrorLoad);
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      data.isEmpty) {
-                    for (var item in data) {
-                      DBLessons.db.insert(item);
-                    }
-                  }
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      data.isEmpty)
-                    return buildOnWrongFuture(context,
-                        'Input Your group correct', false, imgOnErrorLoad);
-
-                  return snapshot.connectionState == ConnectionState.done &&
-                          data.isNotEmpty
-                      ? BuildLessons(widget: widget, data: data)
-                      : Center(
-                          child: CircularProgressIndicator(),
-                        );
-                })
-            : BuildLessons(widget: widget, data: snapshot.data);
+        return FutureBuilder<List<List<Lessons>>>(
+          future:
+              Future.wait([fetchLessons(widget.text), DBLessons.db.select()]),
+          initialData: [snapshotFromDataBase.data, snapshotFromDataBase.data],
+          builder: (BuildContext context, AsyncSnapshot sp) {
+            if (snapshotFromDataBase.data.isEmpty && !sp.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (!sp.hasData && snapshotFromDataBase.data.isNotEmpty) {
+              print('database');
+              return BuildLessons(
+                  widget: widget, data: snapshotFromDataBase.data);
+            }
+            List<Lessons> dataFromInternet = sp.data[0];
+            List<Lessons> dataFromDataBase = sp.data[1];
+            //if you dont have internet connection
+            if (dataFromDataBase == null)
+              return buildOnWrongFuture(
+                  context,
+                  'Cannot load your schedule.\nPlease check your internet connection.',
+                  true,
+                  imgOnErrorLoad);
+            if (sp.connectionState == ConnectionState.done &&
+                dataFromDataBase.isEmpty) {
+              for (var item in dataFromInternet) {
+                DBLessons.db.insert(item);
+              }
+              dataFromDataBase.addAll(dataFromInternet);
+            }
+            // incorrect input
+            if (sp.connectionState == ConnectionState.done &&
+                dataFromDataBase.isEmpty)
+              return buildOnWrongFuture(
+                  context, 'Input Your group correct', false, imgOnErrorLoad);
+            //if something change in schedule(update)
+            print(dataFromDataBase.length);
+            print(dataFromInternet.length);
+            if (sp.connectionState == ConnectionState.done &&
+                listEquals(dataFromInternet, dataFromDataBase) &&
+                dataFromDataBase.isNotEmpty) {
+              print(1);
+              return BuildLessons(widget: widget, data: dataFromDataBase);
+            } else if (dataFromInternet.isNotEmpty) {
+              print(2);
+              return BuildLessons(widget: widget, data: dataFromInternet);
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
       },
     );
   }
@@ -88,7 +106,6 @@ class _ScheduleBodyState extends State<ScheduleBody> {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        //crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             alignment: Alignment.center,

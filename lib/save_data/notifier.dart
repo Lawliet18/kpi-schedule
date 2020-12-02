@@ -17,8 +17,8 @@ class Notifier with ChangeNotifier {
   UnmodifiableListView<bool> get textFieldCounter =>
       UnmodifiableListView(_textFieldCounter);
 
-  List<File> _list = [];
-  UnmodifiableListView<File> get list => UnmodifiableListView(_list);
+  List<String> _list = [];
+  UnmodifiableListView<String> get list => UnmodifiableListView(_list);
 
   void addGroupName(String name) {
     _groupName = name;
@@ -50,7 +50,7 @@ class Notifier with ChangeNotifier {
     notifyListeners();
   }
 
-  void addImagePath(File path) {
+  void addImagePath(String path) {
     _list.add(path);
     notifyListeners();
   }
