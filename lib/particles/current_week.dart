@@ -10,7 +10,7 @@ class CurrentWeek extends StatefulWidget {
 }
 
 class _CurrentWeekState extends State<CurrentWeek> {
-  String current;
+  String current = '1';
   @override
   void initState() {
     current = Provider.of<Notifier>(context, listen: false).week ?? '1';

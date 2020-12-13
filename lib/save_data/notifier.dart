@@ -13,9 +13,11 @@ class Notifier with ChangeNotifier {
   String _week = '1';
   String get week => _week;
 
-  List<bool> _textFieldCounter = [];
-  UnmodifiableListView<bool> get textFieldCounter =>
-      UnmodifiableListView(_textFieldCounter);
+  bool _textFieldValue = false;
+  bool get textFieldValue => _textFieldValue;
+
+  bool _editingType = false;
+  bool get editingType => _editingType;
 
   List<String> _list = [];
   UnmodifiableListView<String> get list => UnmodifiableListView(_list);
@@ -46,7 +48,7 @@ class Notifier with ChangeNotifier {
   }
 
   void addTextField() {
-    _textFieldCounter.add(true);
+    _textFieldValue = !_textFieldValue;
     notifyListeners();
   }
 
@@ -60,8 +62,8 @@ class Notifier with ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteTextField(int index) {
-    _textFieldCounter[index] = false;
+  void changeEditingType() {
+    _editingType = !editingType;
     notifyListeners();
   }
 }

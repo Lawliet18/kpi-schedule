@@ -1,4 +1,3 @@
-import 'package:audio_recorder/audio_recorder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/particles/notes/image_picker.dart';

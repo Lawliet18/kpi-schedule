@@ -73,7 +73,7 @@ class _ScheduleBodyState extends State<ScheduleBody> {
               for (var item in dataFromInternet) {
                 DBLessons.db.insert(item);
               }
-              dataFromDataBase.addAll(dataFromInternet);
+              dataFromDataBase = dataFromInternet;
             }
             // incorrect input
             if (sp.connectionState == ConnectionState.done &&
@@ -86,10 +86,11 @@ class _ScheduleBodyState extends State<ScheduleBody> {
             if (sp.connectionState == ConnectionState.done &&
                 listEquals(dataFromInternet, dataFromDataBase) &&
                 dataFromDataBase.isNotEmpty) {
-              print(1);
               return BuildLessons(widget: widget, data: dataFromDataBase);
             } else if (dataFromInternet.isNotEmpty) {
-              print(2);
+              for (var lessons in dataFromInternet) {
+                DBLessons.db.update(lessons);
+              }
               return BuildLessons(widget: widget, data: dataFromInternet);
             }
             return Center(

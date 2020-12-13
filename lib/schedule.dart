@@ -11,7 +11,8 @@ import 'particles/notes/notes_appbar.dart';
 import 'particles/notes/notes_body.dart';
 
 class Schedule extends StatefulWidget {
-  const Schedule({Key key}) : super(key: key);
+  const Schedule({Key key, this.onSavedNotes = 0}) : super(key: key);
+  final int onSavedNotes;
 
   @override
   _ScheduleState createState() => _ScheduleState();
@@ -45,7 +46,7 @@ class _ScheduleState extends State<Schedule>
   @override
   void initState() {
     imgOnErrorLoad = SvgPicture.asset('assets/img/sad_smile.svg');
-    _selectedValue = 0;
+    _selectedValue = widget.onSavedNotes;
 
     if (currentDay == 7) currentDay = 1;
     _controller = TabController(

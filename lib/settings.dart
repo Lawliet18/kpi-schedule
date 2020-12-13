@@ -21,7 +21,7 @@ class Settings extends StatelessWidget {
       ),
       body: Column(
         children: [
-          buildCategoryName('My Group', Icons.people_outline),
+          CategoryName(name: 'My Group', icon: Icons.people_outline),
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
@@ -37,11 +37,11 @@ class Settings extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () async {
-                    await DBLessons.db.delete();
-                    await DBTeacherSchedule.db.delete();
-                    await DBTeachers.db.delete();
-                    await SharedPref.remove('groups');
+                  onTap: () {
+                    DBLessons.db.delete();
+                    DBTeacherSchedule.db.delete();
+                    DBTeachers.db.delete();
+                    SharedPref.remove('groups');
                     Provider.of<Notifier>(context, listen: false)
                         .removeGroupName();
                     Navigator.of(context).pushReplacement(
@@ -63,7 +63,7 @@ class Settings extends StatelessWidget {
               ],
             ),
           ),
-          buildCategoryName('Color Settings', Icons.colorize),
+          CategoryName(name: 'Color Settings', icon: Icons.colorize),
           Container(
             padding: EdgeInsets.all(20.0),
             child: Row(
@@ -94,8 +94,15 @@ class Settings extends StatelessWidget {
       ),
     );
   }
+}
 
-  Container buildCategoryName(String name, IconData icon) {
+class CategoryName extends StatelessWidget {
+  const CategoryName({Key key, this.icon, this.name}) : super(key: key);
+  final IconData icon;
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20.0),
       child: Row(

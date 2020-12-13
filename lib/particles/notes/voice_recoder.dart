@@ -142,28 +142,18 @@ class _MyAppState extends State<VoiceRecorder> {
     null,
     null,
   ];
-
-  List<String> assetSample = [
-    'assets/samples/sample.aac',
-    'assets/samples/sample.aac',
-    'assets/samples/sample.opus',
-    'assets/samples/sample_opus.caf',
-    'assets/samples/sample.mp3',
-    'assets/samples/sample.ogg',
-    'assets/samples/sample.pcm',
-    'assets/samples/sample.wav',
-    'assets/samples/sample.aiff',
-    'assets/samples/sample_pcm.caf',
-    'assets/samples/sample.flac',
-    'assets/samples/sample.mp4',
-    'assets/samples/sample.amr', // amrNB
-    'assets/samples/sample_xxx.amr', // amrWB
-    'assets/samples/sample_xxx.pcm', // pcm8
-    'assets/samples/sample_xxx.pcm', // pcmFloat32
-    'assets/samples/sample_xxx.pcm', // pcmWebM
-    'assets/samples/sample_opus.webm', // opusWebM
-    'assets/samples/sample_vorbis.webm', // vorbisWebM
-  ];
+  //add assets
+  List<String> assetSample = [];
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  //   'assets/sounds/sample.mp3',
+  // ];
 
   StreamSubscription _recorderSubscription;
   StreamSubscription _playerSubscription;
@@ -221,7 +211,7 @@ class _MyAppState extends State<VoiceRecorder> {
 
   Future<void> copyAssets() async {
     var dataBuffer =
-        (await rootBundle.load('assets/canardo.png')).buffer.asUint8List();
+        (await rootBundle.load('assets/img/logo.png')).buffer.asUint8List();
     var path = '${await playerModule.getResourcePath()}/assets';
     if (!await Directory(path).exists()) {
       await Directory(path).create(recursive: true);
@@ -382,6 +372,8 @@ class _MyAppState extends State<VoiceRecorder> {
   void stopRecorder() async {
     try {
       await recorderModule.stopRecorder();
+      String path = await recorderModule.defaultPath(_codec);
+      print(path);
       print('stopRecorder');
       cancelRecorderSubscriptions();
       cancelRecordingDataSubscription();
@@ -849,13 +841,11 @@ class _MyAppState extends State<VoiceRecorder> {
     return startStopRecorder;
   }
 
-  AssetImage recorderAssetImage() {
+  Icon recorderAssetImage() {
     if (onStartRecorderPressed() == null) {
-      return AssetImage('res/icons/ic_mic_disabled.png');
+      return Icon(Icons.mic_off);
     }
-    return (recorderModule.isStopped)
-        ? AssetImage('res/icons/ic_mic.png')
-        : AssetImage('res/icons/ic_stop.png');
+    return (recorderModule.isStopped) ? Icon(Icons.mic) : Icon(Icons.mic_off);
   }
 
   void setCodec(Codec codec) async {
@@ -928,9 +918,7 @@ class _MyAppState extends State<VoiceRecorder> {
                   child: FlatButton(
                     onPressed: onStartRecorderPressed(),
                     padding: EdgeInsets.all(8.0),
-                    child: Image(
-                      image: recorderAssetImage(),
-                    ),
+                    child: recorderAssetImage(),
                   ),
                 ),
               ),
@@ -942,12 +930,10 @@ class _MyAppState extends State<VoiceRecorder> {
                     onPressed: onPauseResumeRecorderPressed(),
                     disabledColor: Colors.white,
                     padding: EdgeInsets.all(8.0),
-                    child: Image(
-                      width: 36.0,
-                      height: 36.0,
-                      image: AssetImage(onPauseResumeRecorderPressed() != null
-                          ? 'res/icons/ic_pause.png'
-                          : 'res/icons/ic_pause_disabled.png'),
+                    child: Icon(
+                      onPauseResumeRecorderPressed() != null
+                          ? Icons.pause
+                          : Icons.pause_outlined,
                     ),
                   ),
                 ),
@@ -982,10 +968,10 @@ class _MyAppState extends State<VoiceRecorder> {
                   onPressed: onStartPlayerPressed(),
                   disabledColor: Colors.white,
                   padding: EdgeInsets.all(8.0),
-                  child: Image(
-                    image: AssetImage(onStartPlayerPressed() != null
-                        ? 'res/icons/ic_play.png'
-                        : 'res/icons/ic_play_disabled.png'),
+                  child: Icon(
+                    onStartPlayerPressed() != null
+                        ? Icons.play_arrow
+                        : Icons.play_arrow_outlined,
                   ),
                 ),
               ),
@@ -998,12 +984,10 @@ class _MyAppState extends State<VoiceRecorder> {
                   onPressed: onPauseResumePlayerPressed(),
                   disabledColor: Colors.white,
                   padding: EdgeInsets.all(8.0),
-                  child: Image(
-                    width: 36.0,
-                    height: 36.0,
-                    image: AssetImage(onPauseResumePlayerPressed() != null
-                        ? 'res/icons/ic_pause.png'
-                        : 'res/icons/ic_pause_disabled.png'),
+                  child: Icon(
+                    onPauseResumePlayerPressed() != null
+                        ? Icons.pause
+                        : Icons.pause_outlined,
                   ),
                 ),
               ),
@@ -1016,12 +1000,10 @@ class _MyAppState extends State<VoiceRecorder> {
                   onPressed: onStopPlayerPressed(),
                   disabledColor: Colors.white,
                   padding: EdgeInsets.all(8.0),
-                  child: Image(
-                    width: 28.0,
-                    height: 28.0,
-                    image: AssetImage(onStopPlayerPressed() != null
-                        ? 'res/icons/ic_stop.png'
-                        : 'res/icons/ic_stop_disabled.png'),
+                  child: Icon(
+                    onStopPlayerPressed() != null
+                        ? Icons.stop
+                        : Icons.stop_outlined,
                   ),
                 ),
               ),
