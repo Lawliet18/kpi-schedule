@@ -9,6 +9,9 @@ class Lessons {
   String lessonWeek;
   String timeStart;
   String timeEnd;
+  String description;
+  String imagePath;
+  String dateNotes;
 
   Lessons(
       {this.lessonId,
@@ -20,7 +23,10 @@ class Lessons {
       this.teacherName,
       this.lessonWeek,
       this.timeStart,
-      this.timeEnd});
+      this.timeEnd,
+      this.dateNotes,
+      this.description,
+      this.imagePath});
 
   Lessons.fromJson(Map<String, dynamic> json) {
     lessonId = json['lesson_id'];
@@ -33,6 +39,9 @@ class Lessons {
     lessonWeek = json['lesson_week'];
     timeStart = json['time_start'];
     timeEnd = json['time_end'];
+    dateNotes = json['notes_date'];
+    description = json['description'];
+    imagePath = json['image_path'];
   }
 
   Map<String, dynamic> toJson() {
