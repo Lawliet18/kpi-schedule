@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/schedule.dart';
@@ -61,13 +61,15 @@ class _HomeScreenState extends State<HomeScreen> {
       key: _key,
       suggestions: widget.groups,
     );
+    var keyboardVisibilityController = KeyboardVisibilityController();
+    print(
+        'Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
 
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        ifOpen = visible;
-        print(ifOpen);
-      },
-    );
+    // Subscribe
+    keyboardVisibilityController.onChange.listen((bool visible) {
+      ifOpen = visible;
+      print('Keyboard visibility update. Is visible: ${visible}');
+    });
   }
 
   @override
@@ -77,14 +79,17 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.fromLTRB(20, !ifOpen ? 80 : 20, 20, 20),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                !ifOpen ? SizedBox(height: 60) : Container(),
-                !ifOpen
-                    ? Image(image: AssetImage("assets/img/logo.png"))
-                    : Container(),
+                AnimatedCrossFade(
+                    firstChild: Image(image: AssetImage("assets/img/logo.png")),
+                    secondChild: Container(),
+                    crossFadeState: !ifOpen
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: Duration(milliseconds: 500)),
                 SizedBox(height: 10),
                 const Text(
                   'KPI Schedule',
@@ -108,6 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const Text(
             'Please input your group\n(like in example)',
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 10),
           buildField(context),
