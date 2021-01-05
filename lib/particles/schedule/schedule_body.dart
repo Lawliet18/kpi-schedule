@@ -62,7 +62,7 @@ class _ScheduleBodyState extends State<ScheduleBody> {
             List<Lessons> dataFromInternet = sp.data[0];
             List<Lessons> dataFromDataBase = sp.data[1];
             //if you dont have internet connection
-            if (dataFromDataBase == null)
+            if (dataFromDataBase == null && dataFromInternet == null)
               return buildOnWrongFuture(
                   context,
                   'Cannot load your schedule.\nPlease check your internet connection.',
@@ -81,8 +81,6 @@ class _ScheduleBodyState extends State<ScheduleBody> {
               return buildOnWrongFuture(
                   context, 'Input Your group correct', false, imgOnErrorLoad);
             //if something change in schedule(update)
-            print(dataFromDataBase.length);
-            print(dataFromInternet.length);
             if (sp.connectionState == ConnectionState.done &&
                 listEquals(dataFromInternet, dataFromDataBase) &&
                 dataFromDataBase.isNotEmpty) {

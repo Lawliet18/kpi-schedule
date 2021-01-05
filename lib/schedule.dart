@@ -37,7 +37,7 @@ class _ScheduleState extends State<Schedule>
     "П’ятниця",
     'Субота'
   ];
-  String text;
+  String groupName;
   SvgPicture imgOnErrorLoad;
   List<Widget> _widgetOptionBody;
   List<Widget> _widgetOptionAppBar;
@@ -51,14 +51,14 @@ class _ScheduleState extends State<Schedule>
     if (currentDay == 7) currentDay = 1;
     _controller = TabController(
         length: list.length, vsync: this, initialIndex: currentDay - 1);
-    text = Provider.of<Notifier>(context, listen: false).groupName;
+    groupName = Provider.of<Notifier>(context, listen: false).groupName;
     _widgetOptionBody = <Widget>[
-      ScheduleBody(text: text, list: listRu, controller: _controller),
+      ScheduleBody(text: groupName, list: listRu, controller: _controller),
       TeacherBody(),
       NotesBody(),
     ];
     _widgetOptionAppBar = <Widget>[
-      ScheduleAppBar(text: text, list: list, controller: _controller),
+      ScheduleAppBar(text: groupName, list: list, controller: _controller),
       TeacherAppBar(),
       NotesAppBar(),
     ];
@@ -74,42 +74,44 @@ class _ScheduleState extends State<Schedule>
 
   @override
   Widget build(BuildContext context) {
-    return text != null || text != ''
-        ? Scaffold(
-            backgroundColor: Colors.grey[200],
-            appBar: PreferredSize(
-              child: _widgetOptionAppBar.elementAt(_selectedValue),
-              preferredSize: _selectedValue == 0
-                  ? Size.fromHeight(90)
-                  : Size.fromHeight(60),
-            ),
-            body: _widgetOptionBody.elementAt(_selectedValue),
-            bottomNavigationBar: BottomNavigationBar(
-              unselectedItemColor: Colors.grey,
-              selectedItemColor: Theme.of(context).primaryColor,
-              onTap: (value) {
-                setState(() {
-                  _selectedValue = value;
-                });
-              },
-              currentIndex: _selectedValue,
-              items: [
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.book,
-                    ),
-                    label: 'Schedule'),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.people,
-                    ),
-                    label: 'Teacher'),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.notes,
-                    ),
-                    label: 'Notes'),
-              ],
+    return groupName != null || groupName != ''
+        ? SafeArea(
+            child: Scaffold(
+              backgroundColor: Colors.grey[200],
+              appBar: PreferredSize(
+                child: _widgetOptionAppBar.elementAt(_selectedValue),
+                preferredSize: _selectedValue == 0
+                    ? Size.fromHeight(90)
+                    : Size.fromHeight(60),
+              ),
+              body: _widgetOptionBody.elementAt(_selectedValue),
+              bottomNavigationBar: BottomNavigationBar(
+                unselectedItemColor: Colors.grey,
+                selectedItemColor: Theme.of(context).primaryColor,
+                onTap: (value) {
+                  setState(() {
+                    _selectedValue = value;
+                  });
+                },
+                currentIndex: _selectedValue,
+                items: [
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.book,
+                      ),
+                      label: 'Schedule'),
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.people,
+                      ),
+                      label: 'Teacher'),
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.notes,
+                      ),
+                      label: 'Notes'),
+                ],
+              ),
             ),
           )
         : Center(

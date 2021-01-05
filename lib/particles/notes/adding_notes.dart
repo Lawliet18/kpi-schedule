@@ -78,6 +78,8 @@ class _AddingNotesState extends State<AddingNotes> {
     final date = DateTime.now();
     String time = "${date.day} ${DateFormat().add_MMM().format(date)}";
     DBLessons.db.updateNotes(data, text, images, time);
+    Provider.of<Notifier>(context, listen: false).addTextField();
+    Provider.of<Notifier>(context, listen: false).clearimagePath();
     Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => Schedule(
               onSavedNotes: 2,
@@ -110,7 +112,7 @@ class _BuildListOfDataState extends State<BuildListOfData> {
               children: [
                 CategoryName(name: "Text", icon: Icons.text_fields),
                 !value.editingType
-                    ? TextField(
+                    ? TextFormField(
                         minLines: 1,
                         maxLines: 6,
                         autofocus: false,
@@ -121,7 +123,7 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                     : Padding(
                         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 28.0),
                         child: SelectableText(
-                          widget.controller.text,
+                          widget.controller.groupName,
                           onTap: () => value.changeEditingType(),
                           style: TextStyle(fontSize: 18),
                         ),

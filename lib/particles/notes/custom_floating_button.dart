@@ -88,8 +88,9 @@ class _CustomFloatingButtonState extends State<CustomFloatingButton>
       child: FloatingActionButton(
         elevation: 0,
         heroTag: 'btnInbox',
-        onPressed: () => Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => VoiceRecorder())),
+        onPressed: null,
+        // onPressed: () => Navigator.of(context)
+        //     .push(MaterialPageRoute(builder: (context) => VoiceRecorder())),
         tooltip: 'Microphone',
         child: Icon(Icons.mic),
       ),

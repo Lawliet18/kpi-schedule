@@ -62,13 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
       suggestions: widget.groups,
     );
     var keyboardVisibilityController = KeyboardVisibilityController();
-    print(
-        'Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
-
     // Subscribe
     keyboardVisibilityController.onChange.listen((bool visible) {
       ifOpen = visible;
-      print('Keyboard visibility update. Is visible: ${visible}');
     });
   }
 

@@ -39,7 +39,6 @@ class Notifier with ChangeNotifier {
 
   void addCurrentWeek(String value) {
     _week = value;
-    notifyListeners();
   }
 
   void changeWeek(String weekOnTap) {
@@ -54,6 +53,11 @@ class Notifier with ChangeNotifier {
 
   void addImagePath(String path) {
     _list.add(path);
+    notifyListeners();
+  }
+
+  void clearimagePath() {
+    _list.clear();
     notifyListeners();
   }
 

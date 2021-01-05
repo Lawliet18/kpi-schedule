@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/Models/groups.dart';
@@ -5,6 +7,7 @@ import 'package:schedule_kpi/Models/theme_data.dart';
 import 'package:schedule_kpi/home_screen.dart';
 import 'package:schedule_kpi/http_response/parse_current_week.dart';
 import 'package:schedule_kpi/http_response/parse_groups.dart';
+import 'package:schedule_kpi/particles/splash_screen.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/save_data/theme_notifier.dart';
 import 'package:schedule_kpi/schedule.dart';
@@ -84,25 +87,24 @@ class _MyAppState extends State<MyApp> {
                         if (snapshot.hasData) {
                           List<Groups> data = snapshot.data[1];
                           String dataWeek = snapshot.data[0].toString();
+
                           if (!isAdded) {
                             for (var value in data) {
                               list.add(value.groupFullName);
                             }
+
                             isAdded = true;
                             SharedPref.saveListString('list_groups', list);
                           }
-                          SharedPref.saveString(
-                              'current_week', dataWeek.toString());
-
+                          print(dataWeek + '1');
+                          SharedPref.saveString('current_week', dataWeek);
+                          Provider.of<Notifier>(context, listen: false)
+                              .addCurrentWeek(dataWeek);
                           return HomeScreen(
                             groups: list,
                           );
                         } else {
-                          return Scaffold(
-                            body: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
+                          return SplashScreen();
                         }
                       },
                     )
