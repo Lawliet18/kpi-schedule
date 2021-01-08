@@ -3,12 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:schedule_kpi/Models/teachers.dart';
 
-Future<List<Teachers>> fetchTeachers(String groupId) async {
+Future<List<Teachers>?> fetchTeachers(String groupId) async {
   List<Teachers> list = [];
   try {
-    print(groupId);
-    final responce =
-        await http.get('http://api.rozklad.org.ua/v2/groups/$groupId/teachers');
+    final responce = await http
+        .get('https://api.rozklad.org.ua/v2/groups/$groupId/teachers');
     if (responce.statusCode == 200) {
       final parsed = jsonDecode(responce.body);
       list.addAll(parsed['data']
@@ -16,10 +15,8 @@ Future<List<Teachers>> fetchTeachers(String groupId) async {
           .toList());
       return list;
     }
-    return [];
   } catch (e) {
-    print(e);
-    print('fetch teacher error');
-    return [];
+    throw e.toString();
   }
+  throw "fetch teacher exception";
 }

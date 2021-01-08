@@ -7,12 +7,12 @@ class Groups {
   String groupUrl;
 
   Groups(
-      {this.groupId,
-      this.groupFullName,
-      this.groupPrefix,
-      this.groupOkr,
-      this.groupType,
-      this.groupUrl});
+      {required this.groupId,
+      required this.groupFullName,
+      required this.groupPrefix,
+      required this.groupOkr,
+      required this.groupType,
+      required this.groupUrl});
 
   factory Groups.fromJson(Map<String, dynamic> json) {
     return Groups(

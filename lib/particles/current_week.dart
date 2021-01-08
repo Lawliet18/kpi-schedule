@@ -2,18 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 
+enum Week { First, Second }
+
+extension MyMethods on Week {
+  Week invert() {
+    switch (this) {
+      case Week.First:
+        return Week.Second;
+      case Week.Second:
+        return Week.First;
+    }
+  }
+
+  String toStr() {
+    switch (this) {
+      case Week.First:
+        return '1';
+      case Week.Second:
+        return '2';
+    }
+  }
+}
+
 class CurrentWeek extends StatefulWidget {
-  const CurrentWeek({Key key}) : super(key: key);
+  const CurrentWeek({Key? key}) : super(key: key);
 
   @override
   _CurrentWeekState createState() => _CurrentWeekState();
 }
 
 class _CurrentWeekState extends State<CurrentWeek> {
-  String current = '1';
+  late Week current;
   @override
   void initState() {
-    current = Provider.of<Notifier>(context, listen: false).week ?? '1';
+    current = Provider.of<Notifier>(context, listen: false).week;
     super.initState();
   }
 
@@ -25,11 +47,7 @@ class _CurrentWeekState extends State<CurrentWeek> {
       onTap: () {
         Provider.of<Notifier>(context, listen: false).changeWeek(current);
         setState(() {
-          if (current == '1') {
-            current = '2';
-          } else {
-            current = '1';
-          }
+          current = current.invert();
         });
       },
       child: Container(
@@ -42,7 +60,7 @@ class _CurrentWeekState extends State<CurrentWeek> {
               width: 20,
               height: 25,
               decoration: BoxDecoration(
-                color: current == '1' ? Colors.grey : Colors.white,
+                color: current == Week.First ? Colors.grey : Colors.white,
                 border: Border.all(color: Colors.transparent),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(5),
@@ -60,7 +78,7 @@ class _CurrentWeekState extends State<CurrentWeek> {
                 height: 25,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: current == '2' ? Colors.grey : Colors.white,
+                  color: current == Week.Second ? Colors.grey : Colors.white,
                   border: Border.all(color: Colors.transparent),
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(5),

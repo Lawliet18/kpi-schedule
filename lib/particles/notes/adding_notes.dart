@@ -14,7 +14,7 @@ import 'detail_image.dart';
 import 'image_picker.dart';
 
 class AddingNotes extends StatefulWidget {
-  const AddingNotes({Key key, this.data}) : super(key: key);
+  const AddingNotes({Key? key, required this.data}) : super(key: key);
 
   final Lessons data;
 
@@ -23,14 +23,6 @@ class AddingNotes extends StatefulWidget {
 }
 
 class _AddingNotesState extends State<AddingNotes> {
-  TextEditingController _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,10 +36,7 @@ class _AddingNotesState extends State<AddingNotes> {
               LessonBlock(
                 data: widget.data,
               ),
-              Expanded(
-                  child: BuildListOfData(
-                controller: _controller,
-              ))
+              Expanded(child: BuildListOfData(data: widget.data))
             ],
           ),
         ),
@@ -61,7 +50,7 @@ class _AddingNotesState extends State<AddingNotes> {
                 disabledTextColor: Colors.black45,
                 hoverColor: Colors.greenAccent,
                 onPressed: value.list.isNotEmpty || value.textFieldValue
-                    ? () => _saveNotes(widget.data, _controller.text)
+                    ? () => _saveNotes(widget.data, value.textData)
                     : null,
                 child: Text(
                   "Save",
@@ -80,6 +69,7 @@ class _AddingNotesState extends State<AddingNotes> {
     DBLessons.db.updateNotes(data, text, images, time);
     Provider.of<Notifier>(context, listen: false).addTextField();
     Provider.of<Notifier>(context, listen: false).clearimagePath();
+    Provider.of<Notifier>(context, listen: false).changeEditingType();
     Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => Schedule(
               onSavedNotes: 2,
@@ -88,50 +78,71 @@ class _AddingNotesState extends State<AddingNotes> {
 }
 
 class BuildListOfData extends StatefulWidget {
-  const BuildListOfData({Key key, this.controller}) : super(key: key);
-  final controller;
+  final Lessons data;
+
+  const BuildListOfData({Key? key, required this.data}) : super(key: key);
   @override
   _BuildListOfDataState createState() => _BuildListOfDataState();
 }
 
 class _BuildListOfDataState extends State<BuildListOfData> {
+  TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.data.description != null &&
+        widget.data.description!.isNotEmpty) {
+      Provider.of<Notifier>(context, listen: false).changeEditingType();
+      _controller.text = widget.data.description!;
+    }
+    if (widget.data.imagePath != null && widget.data.imagePath!.isNotEmpty) {
+      final list = widget.data.imagePath!.split(' ');
+      for (var path in list) {
+        Provider.of<Notifier>(context, listen: false).addImagePath(path);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<Notifier>(builder: (context, value, child) {
       return ListView(children: [
-        AnimatedCrossFade(
-          crossFadeState: value.textFieldValue
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
-          duration: Duration(milliseconds: 500),
-          firstChild: Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CategoryName(name: "Text", icon: Icons.text_fields),
-                !value.editingType
-                    ? TextFormField(
-                        minLines: 1,
-                        maxLines: 6,
-                        autofocus: false,
-                        controller: widget.controller,
-                        textInputAction: TextInputAction.done,
-                        onEditingComplete: () => value.changeEditingType(),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 28.0),
-                        child: SelectableText(
-                          widget.controller.groupName,
-                          onTap: () => value.changeEditingType(),
-                          style: TextStyle(fontSize: 18),
-                        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CategoryName(name: "Text", icon: Icons.text_fields),
+              !value.editingType
+                  ? TextFormField(
+                      minLines: 1,
+                      maxLines: 6,
+                      autofocus: false,
+                      controller: _controller,
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: () {
+                        value.changeEditingType();
+                        value.addTextData(_controller.text);
+                      },
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 28.0),
+                      child: SelectableText(
+                        _controller.text,
+                        onTap: () => value.changeEditingType(),
+                        style: TextStyle(fontSize: 18),
                       ),
-              ],
-            ),
+                    ),
+            ],
           ),
-          secondChild: Container(),
         ),
         AnimatedCrossFade(
           crossFadeState: value.list.isNotEmpty
@@ -185,7 +196,6 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                             }),
                       ],
                     );
-                    break;
                   default:
                     if (snapshot.hasError) {
                       return Text(

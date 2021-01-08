@@ -9,9 +9,9 @@ class DBTeachers with Table {
   String table = 'Teachers';
   static final DBTeachers db = DBTeachers._();
 
-  static Database _database;
+  static Database? _database;
   @override
-  Future<Database> get database async {
+  Future<Database?> get database async {
     if (_database != null) {
       return _database;
     }
@@ -22,13 +22,13 @@ class DBTeachers with Table {
   @override
   delete() async {
     final db = await database;
-    db.delete(table);
+    db!.delete(table);
   }
 
   @override
   initDB() async {
     final documentsDirectory = await getDatabasesPath();
-    String path = join(documentsDirectory, "teachers_table.db");
+    String path = join(documentsDirectory!, "teachers_table.db");
     return await openDatabase(path,
         version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
@@ -48,7 +48,7 @@ class DBTeachers with Table {
   @override
   Future<List<Teachers>> select() async {
     final db = await database;
-    var res = await db.query(table);
+    var res = await db!.query(table);
     List<Teachers> list = res.isNotEmpty
         ? res.map<Teachers>((json) => Teachers.fromJson(json)).toList()
         : [];
@@ -57,7 +57,14 @@ class DBTeachers with Table {
 
   insert(Teachers teachers) async {
     final db = await database;
-    var res = db.insert(table, teachers.toJson());
+    var res = db!.insert(table, teachers.toJson());
+    return res;
+  }
+
+  update(Teachers teachers) async {
+    final db = await database;
+    var res = await db!.update(table, teachers.toJson(),
+        where: "teacher_id = ?", whereArgs: [teachers.teacherId]);
     return res;
   }
 }

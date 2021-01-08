@@ -6,7 +6,7 @@ import 'package:schedule_kpi/save_data/notifier.dart';
 
 class CustomFloatingButton extends StatefulWidget {
   const CustomFloatingButton({
-    Key key,
+    Key? key,
   }) : super(key: key);
   @override
   _CustomFloatingButtonState createState() => _CustomFloatingButtonState();
@@ -15,10 +15,10 @@ class CustomFloatingButton extends StatefulWidget {
 class _CustomFloatingButtonState extends State<CustomFloatingButton>
     with SingleTickerProviderStateMixin {
   bool isOpened = false;
-  AnimationController _animationController;
-  Animation<Color> _buttonColor;
-  Animation<double> _animateIcon;
-  Animation<double> _translateButton;
+  late AnimationController _animationController;
+  late Animation<Color?> _buttonColor;
+  late Animation<double> _animateIcon;
+  late Animation<double> _translateButton;
   Curve _curve = Curves.easeOut;
   double _fabHeight = 56.0;
 
@@ -40,15 +40,6 @@ class _CustomFloatingButtonState extends State<CustomFloatingButton>
             parent: _animationController,
             curve: Interval(0, 0.75, curve: _curve)));
     super.initState();
-  }
-
-  animate() {
-    if (!isOpened) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
-    }
-    isOpened = !isOpened;
   }
 
   @override
@@ -103,7 +94,14 @@ class _CustomFloatingButtonState extends State<CustomFloatingButton>
         elevation: 6,
         heroTag: 'btnToggle',
         backgroundColor: _buttonColor.value,
-        onPressed: animate,
+        onPressed: () {
+          if (!isOpened) {
+            _animationController.forward();
+          } else {
+            _animationController.reverse();
+          }
+          isOpened = !isOpened;
+        },
         tooltip: 'Toggle',
         child: AnimatedIcon(
           icon: AnimatedIcons.menu_close,

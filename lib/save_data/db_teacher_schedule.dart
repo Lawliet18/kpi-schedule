@@ -9,8 +9,8 @@ class DBTeacherSchedule with Table {
   static final DBTeacherSchedule db = DBTeacherSchedule._();
   String table = 'TeacherSchedule';
 
-  static Database _database;
-  Future<Database> get database async {
+  static Database? _database;
+  Future<Database?> get database async {
     if (_database != null) return _database;
     _database = await initDB();
     return _database;
@@ -19,13 +19,13 @@ class DBTeacherSchedule with Table {
   @override
   delete() async {
     final db = await database;
-    db.delete(table);
+    db!.delete(table);
   }
 
   @override
   initDB() async {
     final documentDirectory = await getDatabasesPath();
-    String path = join(documentDirectory, 'teacher_schedule_table.db');
+    String path = join(documentDirectory!, 'teacher_schedule_table.db');
     return await openDatabase(path,
         version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
@@ -48,7 +48,7 @@ class DBTeacherSchedule with Table {
   @override
   Future<List<TeacherSchedules>> select() async {
     final db = await database;
-    var res = await db.query(table);
+    var res = await db!.query(table);
     List<TeacherSchedules> list = res.isNotEmpty
         ? res.map((json) => TeacherSchedules.fromJson(json)).toList()
         : [];
@@ -57,7 +57,14 @@ class DBTeacherSchedule with Table {
 
   insert(TeacherSchedules teacherSchedules) async {
     final db = await database;
-    var res = db.insert(table, teacherSchedules.toJson());
+    var res = db!.insert(table, teacherSchedules.toJson());
+    return res;
+  }
+
+  update(TeacherSchedules teachersSchedules) async {
+    final db = await database;
+    var res = await db!.update(table, teachersSchedules.toJson(),
+        where: "lesson_id = ?", whereArgs: [teachersSchedules.lessonId]);
     return res;
   }
 }

@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 class DetailImage extends StatelessWidget {
-  const DetailImage({Key key, this.path, this.index}) : super(key: key);
+  const DetailImage({Key? key, required this.path, required this.index})
+      : super(key: key);
   final String path;
   final int index;
   @override

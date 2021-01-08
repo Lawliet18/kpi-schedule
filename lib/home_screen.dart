@@ -8,21 +8,22 @@ import 'package:schedule_kpi/save_data/shared_prefs.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<String> groups;
-  const HomeScreen({Key key, this.groups}) : super(key: key);
+  const HomeScreen({Key? key, required this.groups}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<AutoCompleteTextFieldState<String>> _key = GlobalKey();
-  AutoCompleteTextField<String> searchTextField;
+  late AutoCompleteTextField<String> searchTextField;
   bool ifOpen = false;
 
   @override
   void initState() {
     super.initState();
     searchTextField = AutoCompleteTextField<String>(
-      textInputAction: TextInputAction.done,
+      onFocusChanged: (hasFocus) {},
+      textInputAction: TextInputAction.go,
       submitOnSuggestionTap: true,
       clearOnSubmit: false,
       style: TextStyle(
@@ -56,13 +57,15 @@ class _HomeScreenState extends State<HomeScreen> {
         return a.compareTo(b);
       },
       itemSubmitted: (item) {
-        setState(() => searchTextField.textField.controller.text = item);
+        setState(() => searchTextField.textField.controller?.text = item);
+      },
+      textSubmitted: (item) {
+        print(item);
       },
       key: _key,
       suggestions: widget.groups,
     );
     var keyboardVisibilityController = KeyboardVisibilityController();
-    // Subscribe
     keyboardVisibilityController.onChange.listen((bool visible) {
       ifOpen = visible;
     });
@@ -136,10 +139,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return RaisedButton(
       elevation: 4,
       onPressed: () {
-        SharedPref.saveString(
-            'groups', searchTextField.textField.controller.text);
+        final controllerText = searchTextField.textField.controller?.text ?? "";
+        SharedPref.saveString('groups', controllerText);
         Provider.of<Notifier>(context, listen: false)
-            .addGroupName(searchTextField.textField.controller.text);
+            .addGroupName(controllerText);
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => Schedule()));
       },

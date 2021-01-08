@@ -5,10 +5,10 @@ import '../../settings.dart';
 
 class ScheduleAppBar extends StatelessWidget {
   const ScheduleAppBar({
-    Key key,
-    @required this.text,
-    @required this.list,
-    @required this.controller,
+    Key? key,
+    required this.text,
+    required this.list,
+    required this.controller,
   }) : super(key: key);
 
   final String text;

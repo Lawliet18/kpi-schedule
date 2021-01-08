@@ -1,42 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
+import 'package:schedule_kpi/particles/your_notes.dart';
 
 class LessonBlock extends StatelessWidget {
-  const LessonBlock({Key key, @required this.data, this.withNotes = false})
+  const LessonBlock(
+      {Key? key,
+      required this.data,
+      this.withNotes = false,
+      this.color = Colors.white})
       : super(key: key);
 
   final Lessons data;
   final bool withNotes;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    String dayName;
-    Color _color = chooseColor(data);
-    if (withNotes) {
-      switch (data.dayName) {
-        case 'Понеділок':
-          dayName = 'Пн';
-          break;
-        case 'Вівторок':
-          dayName = 'Вт';
-          break;
-        case 'Середа':
-          dayName = 'Ср';
-          break;
-        case 'Четвер':
-          dayName = 'Чт';
-          break;
-        case 'П ятниця':
-          dayName = 'Пт';
-          break;
-        case 'Субота':
-          dayName = 'Сб';
-          break;
-      }
-    }
+    return withNotes
+        ? GestureDetector(
+            onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => YourNotes(data: data))),
+            child: BuildBlock(
+              data: data,
+              withNotes: withNotes,
+              color: color,
+            ),
+          )
+        : BuildBlock(
+            data: data,
+            withNotes: withNotes,
+            color: color,
+          );
+  }
+}
+
+class BuildBlock extends StatelessWidget {
+  const BuildBlock(
+      {Key? key,
+      required this.data,
+      this.withNotes = false,
+      this.color = Colors.white})
+      : super(key: key);
+  final Lessons data;
+  final bool withNotes;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    Color _randomColor = chooseColor(data);
     return Container(
-      //height: MediaQuery.of(context).size.height * 0.15,
-      color: Colors.white,
+        child: Container(
+      color: color,
       margin: EdgeInsets.only(top: 5.0),
       child: Row(
         children: [
@@ -71,7 +85,7 @@ class LessonBlock extends StatelessWidget {
           ),
           Container(
             width: MediaQuery.of(context).size.width * 0.005,
-            color: _color,
+            color: _randomColor,
           ),
           Expanded(
             child: Padding(
@@ -119,7 +133,7 @@ class LessonBlock extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.1,
                   child: Center(
                     child: Text(
-                      dayName,
+                      shortDayName(data),
                       style: TextStyle(fontSize: 22),
                     ),
                   ),
@@ -127,7 +141,7 @@ class LessonBlock extends StatelessWidget {
               : Container()
         ],
       ),
-    );
+    ));
   }
 }
 
@@ -141,4 +155,31 @@ Color chooseColor(Lessons data) {
   } else {
     return Colors.black;
   }
+}
+
+String shortDayName(Lessons data) {
+  String dayName = '';
+  switch (data.dayName) {
+    case 'Понеділок':
+      dayName = 'Пн';
+      break;
+    case 'Вівторок':
+      dayName = 'Вт';
+      break;
+    case 'Середа':
+      dayName = 'Ср';
+      break;
+    case 'Четвер':
+      dayName = 'Чт';
+      break;
+    case 'П’ятниця':
+      dayName = 'Пт';
+      break;
+    case 'Субота':
+      dayName = 'Сб';
+      break;
+    default:
+      throw "Unreachable";
+  }
+  return dayName;
 }

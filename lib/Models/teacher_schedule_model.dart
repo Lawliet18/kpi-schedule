@@ -11,28 +11,30 @@ class TeacherSchedules {
   //List<Groups> groups;
 
   TeacherSchedules({
-    this.lessonId,
-    this.dayName,
-    this.lessonFullName,
-    this.lessonNumber,
-    this.lessonRoom,
-    this.lessonType,
-    this.lessonWeek,
-    this.timeStart,
-    this.timeEnd,
+    required this.lessonId,
+    required this.dayName,
+    required this.lessonFullName,
+    required this.lessonNumber,
+    required this.lessonRoom,
+    required this.lessonType,
+    required this.lessonWeek,
+    required this.timeStart,
+    required this.timeEnd,
     //this.groups
   });
 
-  TeacherSchedules.fromJson(Map<String, dynamic> json) {
-    lessonId = json['lesson_id'];
-    dayName = json['day_name'];
-    lessonFullName = json['lesson_full_name'];
-    lessonNumber = json['lesson_number'];
-    lessonRoom = json['lesson_room'];
-    lessonType = json['lesson_type'];
-    lessonWeek = json['lesson_week'];
-    timeStart = json['time_start'];
-    timeEnd = json['time_end'];
+  factory TeacherSchedules.fromJson(Map<String, dynamic> json) {
+    return TeacherSchedules(
+      lessonId: json['lesson_id'],
+      dayName: json['day_name'],
+      lessonFullName: json['lesson_full_name'],
+      lessonNumber: json['lesson_number'],
+      lessonRoom: json['lesson_room'],
+      lessonType: json['lesson_type'],
+      lessonWeek: json['lesson_week'],
+      timeStart: json['time_start'],
+      timeEnd: json['time_end'],
+    );
     // if (json['groups'] != null) {
     //   groups = new List<Groups>();
     //   json['groups'].forEach((v) {
@@ -55,21 +57,23 @@ class TeacherSchedules {
   }
 }
 
-class Groups {
-  int groupId;
-  String groupFullName;
+// class Groups {
+//   int groupId;
+//   String groupFullName;
 
-  Groups({this.groupId, this.groupFullName});
+//   Groups({required this.groupId, required this.groupFullName});
 
-  Groups.fromJson(Map<String, dynamic> json) {
-    groupId = json['group_id'];
-    groupFullName = json['group_full_name'];
-  }
+//   factory Groups.fromJson(Map<String, dynamic> json) {
+//     return Groups(
+//       groupId: json['group_id'],
+//       groupFullName: json['group_full_name'],
+//     );
+//   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['group_id'] = this.groupId;
-    data['group_full_name'] = this.groupFullName;
-    return data;
-  }
-}
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = Map<String, dynamic>();
+//     data['group_id'] = this.groupId;
+//     data['group_full_name'] = this.groupFullName;
+//     return data;
+//   }
+// }

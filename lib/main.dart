@@ -7,6 +7,7 @@ import 'package:schedule_kpi/Models/theme_data.dart';
 import 'package:schedule_kpi/home_screen.dart';
 import 'package:schedule_kpi/http_response/parse_current_week.dart';
 import 'package:schedule_kpi/http_response/parse_groups.dart';
+import 'package:schedule_kpi/particles/current_week.dart';
 import 'package:schedule_kpi/particles/splash_screen.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/save_data/theme_notifier.dart';
@@ -22,7 +23,7 @@ void main() {
           ChangeNotifierProvider<Notifier>(create: (context) => Notifier()),
           ChangeNotifierProvider<ThemeNotifier>(create: (context) {
             bool darkTheme = value;
-            if (darkTheme == null || darkTheme == false) {
+            if (darkTheme == false) {
               return ThemeNotifier(ThemeMode.light);
             } else {
               return ThemeNotifier(ThemeMode.dark);
@@ -41,16 +42,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String groupName;
-  String currentWeek;
-  bool isAdded;
+  String? groupName;
+  bool isAdded = false;
   List<String> list = [];
   List<String> loadedList = [];
 
   @override
   void initState() {
     super.initState();
-    isAdded = false;
     SharedPref.loadString('groups').then(
       (value) => setState(() {
         groupName = value;
@@ -61,9 +60,20 @@ class _MyAppState extends State<MyApp> {
           loadedList.addAll(value);
         }));
     SharedPref.loadString('current_week').then((value) => setState(() {
-          currentWeek = value;
-          Provider.of<Notifier>(context, listen: false).addCurrentWeek(value);
+          Provider.of<Notifier>(context, listen: false)
+              .addCurrentWeek(parseWeek(value));
         }));
+  }
+
+  Week parseWeek(String value) {
+    switch (value) {
+      case '1':
+        return Week.First;
+      case '2':
+        return Week.Second;
+      default:
+        throw "Unreachable";
+    }
   }
 
   @override
@@ -75,10 +85,7 @@ class _MyAppState extends State<MyApp> {
       theme: AppTheme().lightTheme,
       darkTheme: AppTheme().darkTheme,
       themeMode: themeMode.themeMode,
-      home: groupName == null ||
-              groupName == '' ||
-              currentWeek == null ||
-              currentWeek == ''
+      home: groupName == null || groupName == ''
           ? Container(
               child: loadedList.isEmpty
                   ? FutureBuilder(
@@ -96,10 +103,9 @@ class _MyAppState extends State<MyApp> {
                             isAdded = true;
                             SharedPref.saveListString('list_groups', list);
                           }
-                          print(dataWeek + '1');
                           SharedPref.saveString('current_week', dataWeek);
                           Provider.of<Notifier>(context, listen: false)
-                              .addCurrentWeek(dataWeek);
+                              .addCurrentWeek(parseWeek(dataWeek));
                           return HomeScreen(
                             groups: list,
                           );

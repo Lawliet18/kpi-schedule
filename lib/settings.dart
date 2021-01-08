@@ -9,7 +9,7 @@ import 'package:schedule_kpi/save_data/shared_prefs.dart';
 import 'package:schedule_kpi/save_data/theme_notifier.dart';
 
 class Settings extends StatelessWidget {
-  const Settings({Key key}) : super(key: key);
+  const Settings({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,8 @@ class Settings extends StatelessWidget {
 }
 
 class CategoryName extends StatelessWidget {
-  const CategoryName({Key key, this.icon, this.name}) : super(key: key);
+  const CategoryName({Key? key, required this.icon, required this.name})
+      : super(key: key);
   final IconData icon;
   final String name;
 

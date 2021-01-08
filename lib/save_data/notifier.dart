@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:schedule_kpi/particles/current_week.dart';
 
 class Notifier with ChangeNotifier {
   String _groupName = '';
@@ -10,8 +11,12 @@ class Notifier with ChangeNotifier {
   bool _darkModeOn = false;
   bool get darkModeOn => _darkModeOn;
 
-  String _week = '1';
-  String get week => _week;
+  Week _week = Week.First;
+  Week get week => _week;
+
+  String _textData = '';
+
+  String get textData => _textData;
 
   bool _textFieldValue = false;
   bool get textFieldValue => _textFieldValue;
@@ -28,6 +33,11 @@ class Notifier with ChangeNotifier {
     notifyListeners();
   }
 
+  void addTextData(String text) {
+    _textData = text;
+    notifyListeners();
+  }
+
   void darkMode(bool darkMode) {
     _darkModeOn = darkMode;
     notifyListeners();
@@ -37,12 +47,12 @@ class Notifier with ChangeNotifier {
     _groupName = '';
   }
 
-  void addCurrentWeek(String value) {
+  void addCurrentWeek(Week value) {
     _week = value;
   }
 
-  void changeWeek(String weekOnTap) {
-    weekOnTap == '1' ? _week = '2' : _week = '1';
+  void changeWeek(Week weekOnTap) {
+    _week = weekOnTap.invert();
     notifyListeners();
   }
 

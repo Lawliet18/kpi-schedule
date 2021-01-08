@@ -7,20 +7,21 @@ class Teachers {
   String teacherRating;
 
   Teachers(
-      {this.teacherId,
-      this.teacherName,
-      this.teacherFullName,
-      this.teacherShortName,
-      this.teacherUrl,
-      this.teacherRating});
+      {required this.teacherId,
+      required this.teacherName,
+      required this.teacherFullName,
+      required this.teacherShortName,
+      required this.teacherUrl,
+      required this.teacherRating});
 
-  Teachers.fromJson(Map<String, dynamic> json) {
-    teacherId = json['teacher_id'];
-    teacherName = json['teacher_name'];
-    teacherFullName = json['teacher_full_name'];
-    teacherShortName = json['teacher_short_name'];
-    teacherUrl = json['teacher_url'];
-    teacherRating = json['teacher_rating'];
+  factory Teachers.fromJson(Map<String, dynamic> json) {
+    return Teachers(
+        teacherId: json['teacher_id'],
+        teacherName: json['teacher_name'],
+        teacherFullName: json['teacher_full_name'],
+        teacherShortName: json['teacher_short_name'],
+        teacherUrl: json['teacher_url'],
+        teacherRating: json['teacher_rating']);
   }
 
   Map<String, dynamic> toJson() {

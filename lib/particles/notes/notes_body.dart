@@ -6,7 +6,7 @@ import 'package:schedule_kpi/particles/lesson_block.dart';
 import 'package:schedule_kpi/save_data/db_lessons.dart';
 
 class NotesBody extends StatefulWidget {
-  const NotesBody({Key key}) : super(key: key);
+  const NotesBody({Key? key}) : super(key: key);
 
   @override
   _NotesBodyState createState() => _NotesBodyState();
@@ -14,8 +14,8 @@ class NotesBody extends StatefulWidget {
 
 class _NotesBodyState extends State<NotesBody> {
   final _animatedListKey = GlobalKey<AnimatedListState>();
-  Lessons note;
-  int _index;
+  Lessons? note;
+  int? _index;
   List<String> list = [];
 
   Tween<Offset> _offSetTween = Tween(begin: Offset(1, 0), end: Offset.zero);
@@ -36,10 +36,9 @@ class _NotesBodyState extends State<NotesBody> {
             var notesList =
                 data.where((item) => item.dateNotes != null).toList();
             for (var item in notesList) {
-              list.add(item.dateNotes);
+              list.add(item.dateNotes!);
             }
             var ls = list.toSet().toList();
-            print(ls);
             return notesList.isNotEmpty
                 ? ListView(
                     children: ls
@@ -97,7 +96,7 @@ class _NotesBodyState extends State<NotesBody> {
                                                     note = notesList[index];
                                                     notesList.removeAt(index);
                                                     _animatedListKey
-                                                        .currentState
+                                                        .currentState!
                                                         .removeItem(
                                                             index,
                                                             (_, __) =>
@@ -112,19 +111,19 @@ class _NotesBodyState extends State<NotesBody> {
                                                       textColor: Colors.red,
                                                       onPressed: () {
                                                         DBLessons.db.updateNotes(
-                                                            note,
-                                                            note.description,
-                                                            note.imagePath,
-                                                            note.dateNotes);
+                                                            note!,
+                                                            note!.description,
+                                                            note!.imagePath,
+                                                            note!.dateNotes);
                                                         setState(() {
                                                           notesList.insert(
-                                                              _index, note);
+                                                              _index!, note!);
                                                         });
                                                         try {
                                                           _animatedListKey
-                                                              .currentState
+                                                              .currentState!
                                                               .insertItem(
-                                                                  _index);
+                                                                  _index!);
                                                         } catch (e) {
                                                           print(e);
                                                         }

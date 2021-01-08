@@ -2,19 +2,22 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'dart:math' as math;
 import 'package:schedule_kpi/Models/lessons.dart';
+import 'package:schedule_kpi/home_screen.dart';
 import 'package:schedule_kpi/http_response/parse_lessons.dart';
 import 'package:schedule_kpi/particles/lesson_block.dart';
 import 'package:schedule_kpi/particles/notes/adding_notes.dart';
 import 'package:schedule_kpi/save_data/db_lessons.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
+import 'package:schedule_kpi/particles/current_week.dart';
 
 class ScheduleBody extends StatefulWidget {
   const ScheduleBody({
-    Key key,
-    @required this.text,
-    @required this.list,
-    @required this.controller,
+    Key? key,
+    required this.text,
+    required this.list,
+    required this.controller,
   }) : super(key: key);
 
   final String text;
@@ -26,13 +29,7 @@ class ScheduleBody extends StatefulWidget {
 }
 
 class _ScheduleBodyState extends State<ScheduleBody> {
-  SvgPicture imgOnErrorLoad;
-
-  @override
-  void initState() {
-    imgOnErrorLoad = SvgPicture.asset('assets/img/sad_smile.svg');
-    super.initState();
-  }
+  SvgPicture imgOnErrorLoad = SvgPicture.asset('assets/img/sad_smile.svg');
 
   @override
   Widget build(BuildContext context) {
@@ -44,32 +41,30 @@ class _ScheduleBodyState extends State<ScheduleBody> {
             child: CircularProgressIndicator(),
           );
         }
-        return FutureBuilder<List<List<Lessons>>>(
-          future:
-              Future.wait([fetchLessons(widget.text), DBLessons.db.select()]),
-          initialData: [snapshotFromDataBase.data, snapshotFromDataBase.data],
+        List<Lessons> dataFromDataBase = snapshotFromDataBase.data!;
+        return FutureBuilder<List<Lessons>?>(
+          future: fetchLessons(widget.text),
+          initialData: snapshotFromDataBase.data,
           builder: (BuildContext context, AsyncSnapshot sp) {
-            if (snapshotFromDataBase.data.isEmpty && !sp.hasData) {
+            if (dataFromDataBase.isEmpty && !sp.hasData) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-            if (!sp.hasData && snapshotFromDataBase.data.isNotEmpty) {
-              print('database');
-              return BuildLessons(
-                  widget: widget, data: snapshotFromDataBase.data);
+            if (!sp.hasData && dataFromDataBase.isNotEmpty) {
+              return BuildLessons(widget: widget, data: dataFromDataBase);
             }
-            List<Lessons> dataFromInternet = sp.data[0];
-            List<Lessons> dataFromDataBase = sp.data[1];
+            List<Lessons>? dataFromInternet = sp.data;
             //if you dont have internet connection
-            if (dataFromDataBase == null && dataFromInternet == null)
+            if (sp.connectionState == ConnectionState.none)
               return buildOnWrongFuture(
                   context,
                   'Cannot load your schedule.\nPlease check your internet connection.',
                   true,
                   imgOnErrorLoad);
             if (sp.connectionState == ConnectionState.done &&
-                dataFromDataBase.isEmpty) {
+                dataFromDataBase.isEmpty &&
+                dataFromInternet != null) {
               for (var item in dataFromInternet) {
                 DBLessons.db.insert(item);
               }
@@ -77,19 +72,21 @@ class _ScheduleBodyState extends State<ScheduleBody> {
             }
             // incorrect input
             if (sp.connectionState == ConnectionState.done &&
-                dataFromDataBase.isEmpty)
+                dataFromDataBase.isEmpty &&
+                dataFromInternet!.isEmpty)
               return buildOnWrongFuture(
                   context, 'Input Your group correct', false, imgOnErrorLoad);
             //if something change in schedule(update)
             if (sp.connectionState == ConnectionState.done &&
                 listEquals(dataFromInternet, dataFromDataBase) &&
-                dataFromDataBase.isNotEmpty) {
-              return BuildLessons(widget: widget, data: dataFromDataBase);
-            } else if (dataFromInternet.isNotEmpty) {
+                dataFromDataBase.isNotEmpty &&
+                dataFromInternet != null) {
               for (var lessons in dataFromInternet) {
                 DBLessons.db.update(lessons);
               }
               return BuildLessons(widget: widget, data: dataFromInternet);
+            } else if (dataFromDataBase.isNotEmpty) {
+              return BuildLessons(widget: widget, data: dataFromDataBase);
             }
             return Center(
               child: CircularProgressIndicator(),
@@ -134,7 +131,7 @@ class _ScheduleBodyState extends State<ScheduleBody> {
                 )
               : FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
                   },
                   child: Text(
                     'Change group',
@@ -151,9 +148,9 @@ class _ScheduleBodyState extends State<ScheduleBody> {
 
 class BuildLessons extends StatelessWidget {
   const BuildLessons({
-    Key key,
-    @required this.widget,
-    @required this.data,
+    Key? key,
+    required this.widget,
+    required this.data,
   }) : super(key: key);
 
   final ScheduleBody widget;
@@ -161,6 +158,7 @@ class BuildLessons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color? _color;
     return Consumer<Notifier>(
         builder: (context, value, child) => TabBarView(
             controller: widget.controller,
@@ -178,18 +176,23 @@ class BuildLessons extends StatelessWidget {
               return ListView.builder(
                 itemCount: data.length,
                 itemBuilder: (BuildContext context, int index) {
+                  if (data[index].dateNotes != null) {
+                    _color = Colors.indigo[100];
+                  } else {
+                    _color = Colors.white;
+                  }
                   if (data[index].lessonType == 'конс')
                     data[index].lessonType =
                         data[index].lessonType.replaceFirst(RegExp('к'), 'К');
                   if (e == data[index].dayName &&
-                      data[index].lessonWeek == value.week) {
+                      data[index].lessonWeek == value.week.toStr()) {
                     return GestureDetector(
                         onDoubleTap: () =>
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => AddingNotes(
                                       data: data[index],
                                     ))),
-                        child: LessonBlock(data: data[index]));
+                        child: LessonBlock(data: data[index], color: _color));
                   } else {
                     return Container();
                   }

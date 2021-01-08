@@ -7,13 +7,13 @@ class CustomImagePicker {
   CustomImagePicker._();
   static final CustomImagePicker imagePicker = CustomImagePicker._();
   final ImagePicker _picker = ImagePicker();
-  static PickedFile imageFile;
-  String _retrieveDataError;
+  PickedFile? imageFile;
+  String? _retrieveDataError;
 
-  Future<void> retrieveLostData() async {
+  Future<PickedFile?> retrieveLostData() async {
     final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
-      return;
+      return null;
     }
     if (response.file != null) {
       imageFile = response.file;
@@ -31,7 +31,7 @@ class CustomImagePicker {
       );
       imageFile = pickedFile;
       Provider.of<Notifier>(context, listen: false)
-          .addImagePath(imageFile.path);
+          .addImagePath(imageFile!.path);
     } catch (e) {
       print(e);
     }

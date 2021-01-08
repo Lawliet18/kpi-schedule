@@ -6,11 +6,6 @@ class SharedPref {
     sharedPreferences.setBool(key, value);
   }
 
-  static Future<bool> loadBool(String key) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    return sharedPreferences?.getBool(key) ?? false;
-  }
-
   static saveString(String key, String value) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setString(key, value);
@@ -21,16 +16,21 @@ class SharedPref {
     sharedPreferences.setStringList(key, value);
   }
 
+  static Future<bool> loadBool(String key) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.getBool(key) ?? false;
+  }
+
   static Future<String> loadString(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    return sharedPreferences?.getString(key) ?? '';
+    return sharedPreferences.getString(key) ?? '';
   }
 
   static Future<List<String>> loadListString(String key) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    return sharedPreferences?.getStringList(key) ?? [];
+    return sharedPreferences.getStringList(key) ?? [];
   }
 
   static remove(String key) async {
