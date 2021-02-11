@@ -2,94 +2,279 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/main.dart';
 import 'package:schedule_kpi/save_data/db_lessons.dart';
+import 'package:schedule_kpi/save_data/db_notes.dart';
 import 'package:schedule_kpi/save_data/db_teacher_schedule.dart';
 import 'package:schedule_kpi/save_data/db_teachers.dart';
+import 'package:schedule_kpi/save_data/language_notifier.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/save_data/shared_prefs.dart';
 import 'package:schedule_kpi/save_data/theme_notifier.dart';
+import 'package:schedule_kpi/schedule.dart';
+import 'particles/current_week.dart';
 
-class Settings extends StatelessWidget {
+import 'generated/l10n.dart';
+
+class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
   @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  List<String> language = ["EN", "RU", "UK"];
+  String? _value;
+  @override
+  void initState() {
+    super.initState();
+    _value = context.read<LanguageNotifier>().language.toUpperCase();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<ThemeNotifier>(context);
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(S.of(context).settings),
         centerTitle: true,
       ),
       body: Column(
         children: [
-          CategoryName(name: 'My Group', icon: Icons.people_outline),
+          CategoryName(name: S.of(context).myGroup, icon: Icons.people_outline),
+          ChangeGroup(),
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  Provider.of<Notifier>(context).groupName.toUpperCase(),
+                  S.of(context).currentWeek,
                   style: TextStyle(
-                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    DBLessons.db.delete();
-                    DBTeacherSchedule.db.delete();
-                    DBTeachers.db.delete();
-                    SharedPref.remove('groups');
-                    Provider.of<Notifier>(context, listen: false)
-                        .removeGroupName();
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => MyApp()));
-                  },
-                  child: Container(
-                    color: Colors.transparent,
-                    child: const Text(
-                      'Change',
-                      style: TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
+                Text(
+                  context.read<Notifier>().currentWeek.toStr(),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                )
+              ],
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+          ),
+          CategoryName(name: S.of(context).colorSettings, icon: Icons.colorize),
+          ChangeTheme(),
+          CategoryName(
+              name: S.of(context).anotherSettings, icon: Icons.library_books),
+          ClearButton(
+            text: S.of(context).clearNotes,
+            buttonText: S.of(context).clear,
+            onPressed: () {
+              DBNotes.db.delete();
+              DBLessons.db.deleteNotes();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Schedule(
+                        onSavedNotes: 2,
+                      )));
+            },
+          ),
+          ClearButton(
+            text: S.of(context).updateSchedule,
+            buttonText: S.of(context).refresh,
+            onPressed: () {
+              DBLessons.db.delete();
+              DBTeacherSchedule.db.delete();
+              DBTeachers.db.delete();
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => Schedule()));
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  S.of(context).languageChange,
+                  style: TextStyle(
+                    fontSize: 18,
+                    letterSpacing: 1.2,
                   ),
                 ),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _value,
+                    items: language
+                        .map((String item) => DropdownMenuItem<String>(
+                              child: Text(item),
+                              value: item,
+                            ))
+                        .toList(),
+                    onChanged: (item) {
+                      switch (item) {
+                        case "EN":
+                          setLanguageButton(item);
+                          break;
+                        case "RU":
+                          setLanguageButton(item);
+                          break;
+                        case "UK":
+                          setLanguageButton(item);
+                          break;
+                        default:
+                          throw "Unreacheble";
+                      }
+                    },
+                  ),
+                )
               ],
             ),
           ),
-          CategoryName(name: 'Color Settings', icon: Icons.colorize),
-          Container(
-            padding: EdgeInsets.all(20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text('Dark Theme'),
-                Switch(
-                  value: Provider.of<Notifier>(context).darkModeOn,
-                  onChanged: (value) {
-                    Provider.of<Notifier>(context, listen: false)
-                        .darkMode(value);
-                    if (value) {
-                      themeMode.setThemeMode(ThemeMode.dark);
-                      Provider.of<Notifier>(context, listen: false)
-                          .darkMode(value);
-                      SharedPref.saveBool('darkMode', value);
-                    } else {
-                      SharedPref.remove('darkMode');
-                      themeMode.setThemeMode(ThemeMode.light);
-                    }
-                  },
-                ),
-              ],
+        ],
+      ),
+    ));
+  }
+
+  void setLanguageButton(String? item) {
+    SharedPref.saveString('language', item!.toLowerCase());
+    setState(() {
+      _value = item;
+      S.load(Locale(item.toLowerCase(), ''));
+    });
+
+    context.read<LanguageNotifier>().setLanguage(item.toLowerCase());
+  }
+}
+
+class ClearButton extends StatelessWidget {
+  const ClearButton(
+      {Key? key,
+      required this.onPressed,
+      required this.text,
+      required this.buttonText})
+      : super(key: key);
+  final void Function() onPressed;
+  final String text;
+  final String buttonText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 18,
+              letterSpacing: 1.2,
             ),
+          ),
+          ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all(Theme.of(context).accentColor)),
+            child: Text(
+              buttonText,
+              style: TextStyle(
+                fontSize: 14,
+                letterSpacing: 1.2,
+              ),
+            ),
+            onPressed: onPressed,
           )
+        ],
+      ),
+    );
+  }
+}
+
+class ChangeTheme extends StatelessWidget {
+  const ChangeTheme({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final themeMode = context.read<ThemeNotifier>();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(
+            S.of(context).darkTheme,
+            style: TextStyle(fontSize: 18),
+          ),
+          Switch(
+            value: context.watch<ThemeNotifier>().darkModeOn,
+            onChanged: (value) {
+              themeMode.darkMode(value);
+              if (value) {
+                themeMode.setThemeMode(ThemeMode.dark);
+                SharedPref.saveBool('darkMode', value);
+              } else {
+                SharedPref.saveBool('darkMode', value);
+                themeMode.setThemeMode(ThemeMode.light);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChangeGroup extends StatelessWidget {
+  const ChangeGroup({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            context.watch<Notifier>().groupName.toUpperCase(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                DBLessons.db.delete();
+                DBTeacherSchedule.db.delete();
+                DBTeachers.db.delete();
+                SharedPref.remove('groups');
+                context.read<Notifier>().removeGroupName();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => MyApp()));
+              },
+              child: Container(
+                alignment: Alignment.centerRight,
+                color: Colors.transparent,
+                child: Text(
+                  S.of(context).change,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -104,22 +289,24 @@ class CategoryName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20.0),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: Colors.white54,
-          ),
-          SizedBox(width: 20),
-          Text(
-            name,
-            style: TextStyle(color: Colors.white54, fontSize: 18),
-          )
-        ],
+    return Material(
+      type: MaterialType.card,
+      elevation: 1,
+      child: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+            ),
+            SizedBox(width: 20),
+            Text(
+              name,
+              style: TextStyle(fontSize: 18),
+            )
+          ],
+        ),
       ),
-      color: Colors.black87,
     );
   }
 }

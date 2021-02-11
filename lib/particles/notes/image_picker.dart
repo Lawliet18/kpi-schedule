@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 
 class CustomImagePicker {
@@ -21,10 +22,11 @@ class CustomImagePicker {
       _retrieveDataError = response.exception.code;
       print(_retrieveDataError);
     }
+
     return imageFile;
   }
 
-  selectMethod(ImageSource source, BuildContext context) async {
+  Future selectMethod(ImageSource source, BuildContext context) async {
     try {
       final pickedFile = await _picker.getImage(
         source: source,
@@ -46,7 +48,7 @@ class CustomImagePicker {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Add optional parameters'),
+            title: Text(S.of(context).cameraParameters),
             content: Container(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -60,14 +62,17 @@ class CustomImagePicker {
                           size: 30,
                         ),
                         SizedBox(width: 10),
-                        Text("Camera",
+                        Text(S.of(context).camera,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w500,
                             ))
                       ],
                     ),
-                    onTap: () => selectMethod(ImageSource.camera, context),
+                    onTap: () {
+                      selectMethod(ImageSource.camera, context)
+                          .then((value) => Navigator.pop(context));
+                    },
                   ),
                   SizedBox(height: 10),
                   GestureDetector(
@@ -79,14 +84,17 @@ class CustomImagePicker {
                           size: 30,
                         ),
                         SizedBox(width: 10),
-                        Text("Gallery",
+                        Text(S.of(context).gallery,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w500,
                             ))
                       ],
                     ),
-                    onTap: () => selectMethod(ImageSource.gallery, context),
+                    onTap: () {
+                      selectMethod(ImageSource.gallery, context)
+                          .then((value) => Navigator.pop(context));
+                    },
                   )
                 ],
               ),

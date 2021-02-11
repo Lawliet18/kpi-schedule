@@ -1,11 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rainbow_color/rainbow_color.dart';
-import 'package:random_color/random_color.dart';
+import 'package:schedule_kpi/Models/teacher_schedule_model.dart';
 import 'package:schedule_kpi/Models/teachers.dart';
+import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/http_response/http_parse_teachers.dart';
+import 'package:schedule_kpi/http_response/parse_teacher_schedule.dart';
 import 'package:schedule_kpi/particles/teachers/teacher_schedule.dart';
+import 'package:schedule_kpi/save_data/db_teacher_schedule.dart';
 import 'package:schedule_kpi/save_data/db_teachers.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -15,17 +19,34 @@ class TeacherBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String groupId = Provider.of<Notifier>(context).groupName;
-
-    return FutureBuilder(
-      future: DBTeachers.db.select(),
-      builder: (BuildContext context, AsyncSnapshot<List<Teachers>> snapshot) {
+    Map<String, List<TeacherSchedules>> teacherMap = Map();
+    return FutureBuilder<List<List>>(
+      future:
+          Future.wait([DBTeachers.db.select(), DBTeacherSchedule.db.select()]),
+      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
         if (!snapshot.hasData) {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
-        return LoadingFromInternet(groupId: groupId, data: snapshot.data!);
+        if (snapshot.connectionState == ConnectionState.none) {
+          return Text(S.of(context).cannotFindTeacher);
+        }
+        List<Teachers> teacherList = snapshot.data![0];
+        List<TeacherSchedules> teacherSchedule = snapshot.data![1];
+        if (snapshot.connectionState == ConnectionState.done &&
+            (teacherList.isEmpty || teacherSchedule.isEmpty)) {
+          return LoadingFromInternet();
+        }
+        teacherList.forEach((element) {
+          teacherMap[element.teacherName] = teacherSchedule
+              .where((el) => el.teacherId == element.teacherName)
+              .toList();
+        });
+        return BuildSeparated(
+          dataBase: teacherList,
+          teacherSchedule: teacherMap,
+        );
       },
     );
   }
@@ -34,32 +55,26 @@ class TeacherBody extends StatelessWidget {
 class LoadingFromInternet extends StatelessWidget {
   const LoadingFromInternet({
     Key? key,
-    required this.groupId,
-    required this.data,
   }) : super(key: key);
-
-  final String groupId;
-  final List<Teachers> data;
 
   @override
   Widget build(BuildContext context) {
+    String groupId = Provider.of<Notifier>(context, listen: false).groupName;
     return FutureBuilder(
       future: fetchTeachers(groupId),
-      initialData: data,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        List<Teachers> dataFromInternet = snapshot.data;
-        if (!snapshot.hasData && data.isEmpty) {
+        List<Teachers> dataFromInternet = snapshot.data ?? [];
+        if (!snapshot.hasData) {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
-        if (!snapshot.hasData && data.isNotEmpty) {
-          return BuildList(
-            dataBase: data,
+        if (snapshot.connectionState == ConnectionState.none) {
+          return Center(
+            child: Text(S.of(context).loadError),
           );
         }
         if (snapshot.connectionState == ConnectionState.done &&
-            data.isEmpty &&
             dataFromInternet.isNotEmpty) {
           for (var item in dataFromInternet) {
             DBTeachers.db.insert(item);
@@ -68,30 +83,25 @@ class LoadingFromInternet extends StatelessWidget {
             dataBase: dataFromInternet,
           );
         }
-        if (snapshot.connectionState == ConnectionState.none) {
-          return Center(
-            child: Text("Can't load"),
-          );
-        }
         if (snapshot.connectionState == ConnectionState.done &&
-            !listEquals(data, dataFromInternet) &&
-            dataFromInternet.isNotEmpty) {
-          for (var item in dataFromInternet) {
-            DBTeachers.db.update(item);
-          }
-          return BuildList(
-            dataBase: dataFromInternet,
+            dataFromInternet.isEmpty) {
+          return Center(
+            child: Text(
+              S.of(context).correctInputGroup,
+              style: TextStyle(fontSize: 24),
+            ),
           );
         }
+
         return BuildList(
-          dataBase: data,
+          dataBase: dataFromInternet,
         );
       },
     );
   }
 }
 
-class BuildList extends StatelessWidget {
+class BuildList extends StatefulWidget {
   const BuildList({
     Key? key,
     required this.dataBase,
@@ -100,31 +110,105 @@ class BuildList extends StatelessWidget {
   final List<Teachers> dataBase;
 
   @override
+  _BuildListState createState() => _BuildListState();
+}
+
+class _BuildListState extends State<BuildList> {
+  List<String> names = [];
+  @override
+  void initState() {
+    super.initState();
+    for (var item in widget.dataBase) {
+      names.add(item.teacherName);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: fetchTeacherSchedule(names),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+            return Center(
+              child: Text(S.of(context).connectionProblem),
+            );
+          case ConnectionState.done:
+            final Map<String, List<TeacherSchedules>> data = snapshot.data;
+            data.forEach((key, value) {
+              value.forEach((element) {
+                element.teacherId = key;
+                DBTeacherSchedule.db.insert(element);
+              });
+            });
+            return BuildSeparated(
+                dataBase: widget.dataBase, teacherSchedule: data);
+          case ConnectionState.waiting:
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          default:
+            throw "teacherSchedule";
+        }
+      },
+    );
+  }
+}
+
+class BuildSeparated extends StatelessWidget {
+  const BuildSeparated({
+    Key? key,
+    required this.dataBase,
+    required this.teacherSchedule,
+  }) : super(key: key);
+
+  final List<Teachers> dataBase;
+  final Map<String, List<TeacherSchedules>> teacherSchedule;
+
+  @override
   Widget build(BuildContext context) {
     return ListView.separated(
       itemCount: dataBase.length,
       itemBuilder: (context, index) {
+        final _color = Colors
+            .primaries[Random().nextInt(Colors.primaries.length)]
+            .withOpacity(0.7);
         return GestureDetector(
           onTap: () => Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => TeacherScheduleWidget(
-                  teacherName: dataBase[index].teacherName))),
-          child: ListTile(
-            title: Text(dataBase[index].teacherName),
-            leading: AnimateColor(
-              dataBase: dataBase,
-              index: index,
-            ),
-            subtitle: CustomLinearProgress(dataBase: dataBase, index: index),
-            trailing: Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.black,
-              size: 20,
+                    list: teacherSchedule[dataBase[index].teacherName]!,
+                    teacherName: dataBase[index].teacherName,
+                  ))),
+          child: Material(
+            elevation: 1,
+            type: MaterialType.card,
+            child: ListTile(
+              title: Text(dataBase[index].teacherName),
+              leading: AnimateColor(
+                dataBase: dataBase,
+                index: index,
+                color: _color,
+              ),
+              subtitle: CustomLinearProgress(
+                dataBase: dataBase,
+                index: index,
+                color: _color,
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                //color: Colors.black,
+                size: 20,
+              ),
             ),
           ),
         );
       },
       separatorBuilder: (context, index) => Divider(
-        color: Colors.black,
         endIndent: 10,
         indent: 10,
         height: 1,
@@ -133,78 +217,30 @@ class BuildList extends StatelessWidget {
   }
 }
 
-class AnimateColor extends StatefulWidget {
-  const AnimateColor({
-    Key? key,
-    required this.dataBase,
-    required this.index,
-  }) : super(key: key);
+class AnimateColor extends StatelessWidget {
+  const AnimateColor(
+      {Key? key,
+      required this.dataBase,
+      required this.index,
+      required this.color})
+      : super(key: key);
 
   final List<Teachers> dataBase;
   final int index;
+  final Color color;
 
-  @override
-  _AnimateColorState createState() => _AnimateColorState();
-}
-
-class _AnimateColorState extends State<AnimateColor>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> animation;
-
-  final Rainbow _rb = Rainbow(spectrum: const [
-    Colors.deepPurple,
-    Colors.indigo,
-    Colors.indigoAccent,
-    Colors.purple,
-    Colors.deepPurpleAccent,
-    Colors.deepPurple,
-  ], rangeStart: 0.0, rangeEnd: 300.0);
-
-  @override
-  void initState() {
-    super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 10))
-          ..repeat();
-    animation = Tween<double>(begin: 0.0, end: 300.0).animate(_controller)
-      ..addListener(() {
-        setState(() {
-          // The state that has changed here is the animation object’s value.
-        });
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _controller.reset();
-          _controller.forward();
-        } else if (status == AnimationStatus.dismissed) {
-          _controller.forward();
-        }
-      });
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-          border: Border.all(color: Colors.transparent),
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(colors: [
-            _rb[animation.value],
-            _rb[(50.0 + animation.value) % _rb.rangeEnd]
-          ])),
+        border: Border.all(color: Colors.transparent),
+        borderRadius: BorderRadius.circular(20),
+        color: color,
+      ),
       child: Center(
         child: Text(
-          widget.dataBase[widget.index].teacherName[0].toUpperCase(),
+          dataBase[index].teacherName[0].toUpperCase(),
           style: TextStyle(
               fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
@@ -213,78 +249,29 @@ class _AnimateColorState extends State<AnimateColor>
   }
 }
 
-class CustomLinearProgress extends StatefulWidget {
-  const CustomLinearProgress(
-      {Key? key, required this.dataBase, required this.index})
-      : super(key: key);
+class CustomLinearProgress extends StatelessWidget {
+  const CustomLinearProgress({
+    Key? key,
+    required this.dataBase,
+    required this.index,
+    required this.color,
+  }) : super(key: key);
 
   final List<Teachers> dataBase;
   final int index;
+  final Color color;
 
-  @override
-  _CustomLinearProgressState createState() => _CustomLinearProgressState();
-}
-
-class _CustomLinearProgressState extends State<CustomLinearProgress>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> animation;
-
-  final Rainbow _rb = Rainbow(spectrum: const [
-    Colors.deepPurple,
-    Colors.indigo,
-    Colors.indigoAccent,
-    Colors.purple,
-    Colors.deepPurpleAccent,
-    Colors.deepPurple,
-  ], rangeStart: 0.0, rangeEnd: 300.0);
-
-  @override
-  void initState() {
-    super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 10))
-          ..repeat();
-    animation = Tween<double>(begin: 0, end: 300).animate(_controller)
-      ..addListener(() {
-        setState(() {
-          // The state that has changed here is the animation object’s value.
-        });
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _controller.reset();
-          _controller.forward();
-        } else if (status == AnimationStatus.dismissed) {
-          _controller.forward();
-        }
-      });
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return LinearPercentIndicator(
-      animation: true,
-      percent:
-          (double.tryParse(widget.dataBase[widget.index].teacherRating) ?? 0) /
-              5,
-      linearGradient: LinearGradient(colors: [
-        _rb[animation.value],
-        _rb[(50.0 + animation.value) % _rb.rangeEnd]
-      ]),
+      animation: false,
+      percent: (double.tryParse(dataBase[index].teacherRating) ?? 0) / 5,
+      progressColor: color,
       lineHeight: 10,
       linearStrokeCap: LinearStrokeCap.roundAll,
       animationDuration: 700,
       leading: Padding(
         padding: const EdgeInsets.only(bottom: 3.0),
-        child: Text('Rating : '),
+        child: Text(S.of(context).rating + ' '),
       ),
       alignment: MainAxisAlignment.start,
     );

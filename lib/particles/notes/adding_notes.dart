@@ -1,15 +1,18 @@
 import 'dart:io';
-import 'package:intl/intl.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
+import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/particles/lesson_block.dart';
+import 'package:schedule_kpi/particles/notes/notes_body.dart';
 import 'package:schedule_kpi/save_data/db_lessons.dart';
+import 'package:schedule_kpi/save_data/db_notes.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/schedule.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:schedule_kpi/settings.dart';
 
-import 'custom_floating_button.dart';
 import 'detail_image.dart';
 import 'image_picker.dart';
 
@@ -25,9 +28,17 @@ class AddingNotes extends StatefulWidget {
 class _AddingNotesState extends State<AddingNotes> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+      child: Scaffold(
         appBar: AppBar(
-          title: Text('Create Notes'),
+          title: Text(S.of(context).createNotes),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.info_rounded),
+              onPressed: () {},
+              tooltip: S.of(context).notesTooltip,
+            )
+          ],
         ),
         body: Container(
           height: MediaQuery.of(context).size.height,
@@ -36,6 +47,9 @@ class _AddingNotesState extends State<AddingNotes> {
               LessonBlock(
                 data: widget.data,
               ),
+              SizedBox(
+                height: 10,
+              ),
               Expanded(child: BuildListOfData(data: widget.data))
             ],
           ),
@@ -43,31 +57,52 @@ class _AddingNotesState extends State<AddingNotes> {
         bottomNavigationBar: Consumer<Notifier>(
           builder: (context, value, child) => Container(
             margin: EdgeInsets.only(left: 50, right: 50, bottom: 10),
-            child: FlatButton(
-                minWidth: 100,
-                color: Colors.redAccent,
-                disabledColor: Colors.grey,
-                disabledTextColor: Colors.black45,
-                hoverColor: Colors.greenAccent,
-                onPressed: value.list.isNotEmpty || value.textFieldValue
+            child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        Theme.of(context).colorScheme.secondary),
+                    elevation: MaterialStateProperty.all<double>(4),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    )),
+                onPressed: value.list.isNotEmpty ||
+                        (widget.data.description != null &&
+                            widget.data.description!.isNotEmpty) ||
+                        Provider.of<Notifier>(context, listen: false)
+                            .textData
+                            .isNotEmpty
                     ? () => _saveNotes(widget.data, value.textData)
                     : null,
                 child: Text(
-                  "Save",
+                  S.of(context).save,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 )),
           ),
         ),
-        floatingActionButton: CustomFloatingButton());
+        floatingActionButton: FloatingActionButton(
+          elevation: 6,
+          onPressed: () =>
+              CustomImagePicker.imagePicker.onImageButtonPressed(context),
+          tooltip: 'Image',
+          child: Icon(Icons.image),
+        ),
+      ),
+    );
   }
 
   _saveNotes(Lessons data, String text) {
     final list = Provider.of<Notifier>(context, listen: false).list;
     final images = list.join(' ');
     final date = DateTime.now();
-    String time = "${date.day} ${DateFormat().add_MMM().format(date)}";
+    String time = "${date.day} ${date.month}";
     DBLessons.db.updateNotes(data, text, images, time);
-    Provider.of<Notifier>(context, listen: false).addTextField();
+    if (widget.data.dateNotes != null) {
+      DBNotes.db.updateNotes(data, text, images, time);
+    } else {
+      DBNotes.db.insert(data, text, images, time);
+    }
+
     Provider.of<Notifier>(context, listen: false).clearimagePath();
     Provider.of<Notifier>(context, listen: false).changeEditingType();
     Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -91,16 +126,21 @@ class _BuildListOfDataState extends State<BuildListOfData> {
   @override
   void initState() {
     super.initState();
+    print(widget.data.description);
+
     if (widget.data.description != null &&
         widget.data.description!.isNotEmpty) {
-      Provider.of<Notifier>(context, listen: false).changeEditingType();
       _controller.text = widget.data.description!;
     }
-    if (widget.data.imagePath != null && widget.data.imagePath!.isNotEmpty) {
-      final list = widget.data.imagePath!.split(' ');
-      for (var path in list) {
-        Provider.of<Notifier>(context, listen: false).addImagePath(path);
+    try {
+      final provider = Provider.of<Notifier>(context, listen: false);
+      if (widget.data.imagePath != null && widget.data.imagePath!.isNotEmpty) {
+        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+          provider.addImagePath(widget.data.imagePath!);
+        });
       }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -114,35 +154,34 @@ class _BuildListOfDataState extends State<BuildListOfData> {
   Widget build(BuildContext context) {
     return Consumer<Notifier>(builder: (context, value, child) {
       return ListView(children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CategoryName(name: "Text", icon: Icons.text_fields),
-              !value.editingType
-                  ? TextFormField(
-                      minLines: 1,
-                      maxLines: 6,
-                      autofocus: false,
-                      controller: _controller,
-                      textInputAction: TextInputAction.done,
-                      onEditingComplete: () {
-                        value.changeEditingType();
-                        value.addTextData(_controller.text);
-                      },
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 28.0),
-                      child: SelectableText(
-                        _controller.text,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CategoryName(name: S.of(context).text, icon: Icons.text_fields),
+            value.editingType
+                ? TextFormField(
+                    style: TextStyle(fontSize: 22),
+                    minLines: 1,
+                    maxLines: 10,
+                    autofocus: true,
+                    controller: _controller,
+                    textInputAction: TextInputAction.done,
+                    onEditingComplete: () {
+                      value.changeEditingType();
+                      value.addTextData(_controller.text);
+                    },
+                    decoration: InputDecoration(
+                        hintText: 'Print something',
+                        contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10)),
+                  )
+                : Builder(builder: (context) {
+                    List<String> list = _controller.text.split(' ');
+                    return GestureDetector(
                         onTap: () => value.changeEditingType(),
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-            ],
-          ),
+                        child: BuildDescription(list: list));
+                  }),
+          ],
         ),
         AnimatedCrossFade(
           crossFadeState: value.list.isNotEmpty
@@ -157,7 +196,8 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                   case ConnectionState.done:
                     return Column(
                       children: [
-                        CategoryName(name: "Images", icon: Icons.image),
+                        CategoryName(
+                            name: S.of(context).images, icon: Icons.image),
                         GridView.builder(
                             padding: EdgeInsets.all(5.0),
                             shrinkWrap: true,
@@ -166,32 +206,48 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     mainAxisSpacing: 10,
-                                    crossAxisSpacing: 5,
+                                    crossAxisSpacing: 10,
                                     crossAxisCount: 2),
                             itemBuilder: (context, index) {
-                              return Column(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      child: Hero(
-                                          tag: value.list[index] +
-                                              index.toString(),
-                                          child: Image.file(
-                                              File(value.list[index]))),
-                                      onTap: () => Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                              builder: (context) => DetailImage(
-                                                    path: value.list[index],
-                                                    index: index,
-                                                  ))),
+                              return GestureDetector(
+                                child: Hero(
+                                  tag: value.list[index] + index.toString(),
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    height:
+                                        MediaQuery.of(context).size.width * 4.5,
+                                    margin: EdgeInsets.all(1.0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Dismissible(
+                                        key: UniqueKey(),
+                                        background: BackgroundWidget(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          padding: 10,
+                                        ),
+                                        secondaryBackground: BackgroundWidget(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          padding: 10,
+                                        ),
+                                        child: Image.file(
+                                          File(value.list[index]),
+                                          fit: BoxFit.cover,
+                                        ),
+                                        onDismissed: (direction) =>
+                                            Provider.of<Notifier>(context)
+                                                .deleteImagePath(index),
+                                      ),
                                     ),
                                   ),
-                                  RaisedButton(
-                                    onPressed: () =>
-                                        value.deleteImagePath(index),
-                                    child: Text("remove"),
-                                  )
-                                ],
+                                ),
+                                onTap: () => Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) => DetailImage(
+                                              path: value.list[index],
+                                              index: index,
+                                            ))),
                               );
                             }),
                       ],
@@ -211,5 +267,55 @@ class _BuildListOfDataState extends State<BuildListOfData> {
         )
       ]);
     });
+  }
+}
+
+class BuildDescription extends StatelessWidget {
+  const BuildDescription({
+    Key? key,
+    required this.list,
+  }) : super(key: key);
+
+  final List<String> list;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+      child: list[0] == '' && list.length == 1
+          ? Text(
+              'Type on me to print something',
+              style: TextStyle(fontSize: 24),
+            )
+          : Text.rich(
+              TextSpan(
+                  children: list.map((e) {
+                return !e.startsWith('#')
+                    ? TextSpan(
+                        text: e + ' ',
+                        style: TextStyle(
+                            fontSize: 22,
+                            //color: Colors.black,
+                            fontFamily: 'DniproCity'),
+                      )
+                    : TextSpan(
+                        text: e.substring(1) + ' ',
+                        style: TextStyle(
+                            fontSize: 22,
+                            color: Theme.of(context).accentColor,
+                            fontFamily: 'DniproCity'),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => _launchURL(e.substring(1)));
+              }).toList()),
+            ),
+    );
+  }
+
+  _launchURL(String value) async {
+    if (await canLaunch(value)) {
+      await launch(value);
+    } else {
+      throw 'Could not launch $value';
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/settings.dart';
 
 class TeacherAppBar extends StatelessWidget {
@@ -8,11 +9,12 @@ class TeacherAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: false,
+      leading: Icon(Icons.people),
       title: Text(
-        'Teachers',
+        S.of(context).teacher,
         style: TextStyle(
           color: Colors.white,
-          fontSize: 26,
+          fontSize: 20,
           letterSpacing: 1.2,
           wordSpacing: 1.2,
         ),

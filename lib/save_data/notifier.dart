@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:schedule_kpi/particles/current_week.dart';
@@ -8,8 +7,8 @@ class Notifier with ChangeNotifier {
   String _groupName = '';
   String get groupName => _groupName;
 
-  bool _darkModeOn = false;
-  bool get darkModeOn => _darkModeOn;
+  Week _currentWeek = Week.First;
+  Week get currentWeek => _currentWeek;
 
   Week _week = Week.First;
   Week get week => _week;
@@ -18,10 +17,7 @@ class Notifier with ChangeNotifier {
 
   String get textData => _textData;
 
-  bool _textFieldValue = false;
-  bool get textFieldValue => _textFieldValue;
-
-  bool _editingType = false;
+  bool _editingType = true;
   bool get editingType => _editingType;
 
   List<String> _list = [];
@@ -38,11 +34,6 @@ class Notifier with ChangeNotifier {
     notifyListeners();
   }
 
-  void darkMode(bool darkMode) {
-    _darkModeOn = darkMode;
-    notifyListeners();
-  }
-
   void removeGroupName() {
     _groupName = '';
   }
@@ -56,12 +47,11 @@ class Notifier with ChangeNotifier {
     notifyListeners();
   }
 
-  void addTextField() {
-    _textFieldValue = !_textFieldValue;
-    notifyListeners();
-  }
-
   void addImagePath(String path) {
+    final imageList = path.split(' ');
+    if (imageList.length > 1) {
+      _list.addAll(imageList);
+    }
     _list.add(path);
     notifyListeners();
   }
@@ -79,5 +69,13 @@ class Notifier with ChangeNotifier {
   void changeEditingType() {
     _editingType = !editingType;
     notifyListeners();
+  }
+
+  void notifier() {
+    notifyListeners();
+  }
+
+  void setWeek(Week value) {
+    _currentWeek = value;
   }
 }

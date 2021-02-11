@@ -40,15 +40,17 @@ class DBTeacherSchedule with Table {
         "lesson_room TEXT,"
         "lesson_type TEXT,"
         "lesson_week TEXT,"
+        "teacher_id TEXT,"
         "time_start TEXT,"
-        "time_end TEXT"
+        "time_end TEXT,"
+        "groups TEXT"
         ")");
   }
 
   @override
   Future<List<TeacherSchedules>> select() async {
     final db = await database;
-    var res = await db!.query(table);
+    final res = await db!.query(table);
     List<TeacherSchedules> list = res.isNotEmpty
         ? res.map((json) => TeacherSchedules.fromJson(json)).toList()
         : [];

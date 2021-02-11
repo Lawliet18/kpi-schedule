@@ -18,5 +18,4 @@ Future<List<Teachers>?> fetchTeachers(String groupId) async {
   } catch (e) {
     throw e.toString();
   }
-  throw "fetch teacher exception";
 }

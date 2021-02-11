@@ -1,27 +1,26 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
 import 'package:schedule_kpi/Models/lessons.dart';
-import 'package:schedule_kpi/home_screen.dart';
+
+import 'package:schedule_kpi/generated/l10n.dart';
+
 import 'package:schedule_kpi/http_response/parse_lessons.dart';
 import 'package:schedule_kpi/particles/lesson_block.dart';
 import 'package:schedule_kpi/particles/notes/adding_notes.dart';
 import 'package:schedule_kpi/save_data/db_lessons.dart';
+import 'package:schedule_kpi/save_data/db_notes.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/particles/current_week.dart';
 
 class ScheduleBody extends StatefulWidget {
   const ScheduleBody({
     Key? key,
-    required this.text,
-    required this.list,
     required this.controller,
   }) : super(key: key);
-
-  final String text;
-  final List<String> list;
   final TabController controller;
 
   @override
@@ -29,69 +28,70 @@ class ScheduleBody extends StatefulWidget {
 }
 
 class _ScheduleBodyState extends State<ScheduleBody> {
-  SvgPicture imgOnErrorLoad = SvgPicture.asset('assets/img/sad_smile.svg');
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Lessons>>(
-      future: DBLessons.db.select(),
-      builder: (context, AsyncSnapshot<List<Lessons>> snapshotFromDataBase) {
-        if (!snapshotFromDataBase.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        List<Lessons> dataFromDataBase = snapshotFromDataBase.data!;
-        return FutureBuilder<List<Lessons>?>(
-          future: fetchLessons(widget.text),
-          initialData: snapshotFromDataBase.data,
-          builder: (BuildContext context, AsyncSnapshot sp) {
-            if (dataFromDataBase.isEmpty && !sp.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
+    return FutureBuilder<List<List<Lessons>>>(
+        future: Future.wait([DBLessons.db.select(), DBNotes.db.select()]),
+        builder: (context, AsyncSnapshot snapshotFromDataBase) {
+          if (snapshotFromDataBase.hasData) {
+            List<Lessons> dataFromDataBase = snapshotFromDataBase.data![0];
+            List<Lessons> notes = snapshotFromDataBase.data![1];
+
+            if (dataFromDataBase.isEmpty) {
+              return LoadFromInternet(controller: widget.controller);
+            } else {
+              return BuildLessons(
+                controller: widget.controller,
+                data: dataFromDataBase,
+                notes: notes,
               );
             }
-            if (!sp.hasData && dataFromDataBase.isNotEmpty) {
-              return BuildLessons(widget: widget, data: dataFromDataBase);
-            }
-            List<Lessons>? dataFromInternet = sp.data;
-            //if you dont have internet connection
-            if (sp.connectionState == ConnectionState.none)
-              return buildOnWrongFuture(
-                  context,
-                  'Cannot load your schedule.\nPlease check your internet connection.',
-                  true,
-                  imgOnErrorLoad);
-            if (sp.connectionState == ConnectionState.done &&
-                dataFromDataBase.isEmpty &&
-                dataFromInternet != null) {
-              for (var item in dataFromInternet) {
-                DBLessons.db.insert(item);
-              }
-              dataFromDataBase = dataFromInternet;
-            }
-            // incorrect input
-            if (sp.connectionState == ConnectionState.done &&
-                dataFromDataBase.isEmpty &&
-                dataFromInternet!.isEmpty)
-              return buildOnWrongFuture(
-                  context, 'Input Your group correct', false, imgOnErrorLoad);
-            //if something change in schedule(update)
-            if (sp.connectionState == ConnectionState.done &&
-                listEquals(dataFromInternet, dataFromDataBase) &&
-                dataFromDataBase.isNotEmpty &&
-                dataFromInternet != null) {
-              for (var lessons in dataFromInternet) {
-                DBLessons.db.update(lessons);
-              }
-              return BuildLessons(widget: widget, data: dataFromInternet);
-            } else if (dataFromDataBase.isNotEmpty) {
-              return BuildLessons(widget: widget, data: dataFromDataBase);
-            }
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          },
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
+  }
+}
+
+class LoadFromInternet extends StatefulWidget {
+  const LoadFromInternet({Key? key, required this.controller})
+      : super(key: key);
+
+  final TabController controller;
+
+  @override
+  _LoadFromInternetState createState() => _LoadFromInternetState();
+}
+
+class _LoadFromInternetState extends State<LoadFromInternet> {
+  final SvgPicture imgOnErrorLoad =
+      SvgPicture.asset('assets/img/sad_smile.svg');
+  @override
+  Widget build(BuildContext context) {
+    print(context.read<Notifier>().groupName);
+    return FutureBuilder(
+      future: fetchLessons(context.read<Notifier>().groupName),
+      builder: (BuildContext context, AsyncSnapshot sp) {
+        //if you dont have internet connection
+        if (sp.connectionState == ConnectionState.none)
+          return buildOnWrongFuture(context,
+              S.of(context).scheduleInternetError, true, imgOnErrorLoad);
+        if (sp.connectionState == ConnectionState.done) {
+          List<Lessons> dataFromInternet = sp.data ?? [];
+          // incorrect input
+          if (dataFromInternet.isEmpty)
+            return buildOnWrongFuture(context, S.of(context).correctInputGroup,
+                false, imgOnErrorLoad);
+
+          for (var item in dataFromInternet) {
+            DBLessons.db.insert(item);
+          }
+
+          return BuildLessons(
+              controller: widget.controller, data: dataFromInternet);
+        }
+        return Center(
+          child: CircularProgressIndicator(),
         );
       },
     );
@@ -111,34 +111,32 @@ class _ScheduleBodyState extends State<ScheduleBody> {
             child: imgOnErrorLoad,
           ),
           SizedBox(height: 10),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+          Center(
+            child: Text(
+              description,
+              //textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+            ),
           ),
           SizedBox(height: 10),
           isInternetFailed
-              ? FlatButton(
+              ? ElevatedButton(
                   onPressed: () {
                     setState(() {});
                   },
                   child: Text(
-                    'Refresh',
-                    style:
-                        TextStyle(color: Theme.of(context).textSelectionColor),
+                    S.of(context).refresh,
                   ),
-                  color: Theme.of(context).primaryColor,
+                  //color: Theme.of(context).primaryColor,
                 )
-              : FlatButton(
+              : ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
                   child: Text(
-                    'Change group',
-                    style:
-                        TextStyle(color: Theme.of(context).textSelectionColor),
+                    S.of(context).changeGroup,
                   ),
-                  color: Theme.of(context).primaryColor,
+                  //color: Theme.of(context).primaryColor,
                 )
         ],
       ),
@@ -149,25 +147,35 @@ class _ScheduleBodyState extends State<ScheduleBody> {
 class BuildLessons extends StatelessWidget {
   const BuildLessons({
     Key? key,
-    required this.widget,
+    required this.controller,
     required this.data,
+    this.notes = const [],
   }) : super(key: key);
 
-  final ScheduleBody widget;
+  final TabController controller;
   final List<Lessons> data;
+  final List<Lessons> notes;
 
   @override
   Widget build(BuildContext context) {
     Color? _color;
+    final listUa = [
+      'Понеділок',
+      'Вівторок',
+      'Середа',
+      'Четвер',
+      "П’ятниця",
+      'Субота'
+    ];
     return Consumer<Notifier>(
         builder: (context, value, child) => TabBarView(
-            controller: widget.controller,
-            children: widget.list.map((e) {
+            controller: controller,
+            children: listUa.map((e) {
               final b = data.where((element) => element.dayName == e);
               if (b.isEmpty)
                 return Center(
                     child: Text(
-                  'You are free',
+                  S.of(context).free,
                   style: TextStyle(
                     fontSize: 36,
                     letterSpacing: 1.3,
@@ -176,10 +184,14 @@ class BuildLessons extends StatelessWidget {
               return ListView.builder(
                 itemCount: data.length,
                 itemBuilder: (BuildContext context, int index) {
-                  if (data[index].dateNotes != null) {
-                    _color = Colors.indigo[100];
+                  if (data[index].dateNotes != null &&
+                      notes.any((element) =>
+                          element.lessonId == data[index].lessonId)) {
+                    _color = Colors.primaries[
+                            math.Random().nextInt(Colors.primaries.length)]
+                        .withOpacity(0.3);
                   } else {
-                    _color = Colors.white;
+                    _color = Colors.transparent;
                   }
                   if (data[index].lessonType == 'конс')
                     data[index].lessonType =

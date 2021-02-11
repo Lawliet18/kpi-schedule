@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
+import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/particles/your_notes.dart';
 
 class LessonBlock extends StatelessWidget {
@@ -7,7 +8,7 @@ class LessonBlock extends StatelessWidget {
       {Key? key,
       required this.data,
       this.withNotes = false,
-      this.color = Colors.white})
+      this.color = Colors.transparent})
       : super(key: key);
 
   final Lessons data;
@@ -39,7 +40,7 @@ class BuildBlock extends StatelessWidget {
       {Key? key,
       required this.data,
       this.withNotes = false,
-      this.color = Colors.white})
+      this.color = Colors.transparent})
       : super(key: key);
   final Lessons data;
   final bool withNotes;
@@ -48,100 +49,107 @@ class BuildBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color _randomColor = chooseColor(data);
-    return Container(
+    return Material(
+        type: MaterialType.card,
+        elevation: 1,
         child: Container(
-      color: color,
-      margin: EdgeInsets.only(top: 5.0),
-      child: Row(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.2,
-            padding: EdgeInsets.all(15),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  data.lessonNumber,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 5),
-                Column(
+          color: color,
+          margin: EdgeInsets.only(top: 5.0),
+          child: Row(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * 0.2,
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      data.timeStart.substring(0, 5),
+                      data.lessonNumber,
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Text(
-                      data.timeEnd.substring(0, 5),
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 5),
-              ],
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.005,
-            color: _randomColor,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
-              child: data.lessonName != 'ВП'
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    SizedBox(height: 5),
+                    Column(
                       children: [
                         Text(
-                          data.lessonName,
+                          data.timeStart.substring(0, 5),
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(
-                          height: 5,
                         ),
                         Text(
-                          "Teacher: " +
-                              (data.teacherName.isEmpty
-                                  ? "Don't know"
-                                  : data.teacherName),
-                          style: TextStyle(fontSize: 16),
+                          data.timeEnd.substring(0, 5),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
-                          height: 3,
-                        ),
-                        Text("Type: " + data.lessonType.toString()),
-                        data.lessonRoom != ''
-                            ? Text("Room : " + data.lessonRoom)
-                            : Container(),
                       ],
-                    )
-                  : Center(
-                      child: Text(
-                      data.lessonName,
-                      style: TextStyle(fontSize: 30),
-                    )),
-            ),
-          ),
-          withNotes
-              ? Container(
-                  padding: const EdgeInsets.only(right: 5),
-                  width: MediaQuery.of(context).size.width * 0.1,
-                  child: Center(
-                    child: Text(
-                      shortDayName(data),
-                      style: TextStyle(fontSize: 22),
                     ),
-                  ),
-                )
-              : Container()
-        ],
-      ),
-    ));
+                    SizedBox(height: 5),
+                  ],
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.005,
+                color: _randomColor,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 16, 12),
+                  child: data.lessonName != 'ВП'
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              data.lessonName,
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              S.of(context).teacherBlock +
+                                  " " +
+                                  (data.teacherName.isEmpty
+                                      ? S.of(context).dontKnow
+                                      : data.teacherName),
+                              style: TextStyle(fontSize: 15),
+                            ),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            Text(S.of(context).type +
+                                " " +
+                                data.lessonType.toString()),
+                            data.lessonRoom != ''
+                                ? Text(
+                                    S.of(context).room + " " + data.lessonRoom)
+                                : Container(),
+                          ],
+                        )
+                      : Center(
+                          child: Text(
+                          data.lessonName,
+                          style: TextStyle(fontSize: 30),
+                        )),
+                ),
+              ),
+              withNotes
+                  ? Container(
+                      padding: const EdgeInsets.only(right: 5),
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: Center(
+                        child: Text(
+                          shortDayName(data),
+                          style: TextStyle(fontSize: 22),
+                        ),
+                      ),
+                    )
+                  : Container()
+            ],
+          ),
+        ));
   }
 }
 

@@ -48,7 +48,7 @@ class DBTeachers with Table {
   @override
   Future<List<Teachers>> select() async {
     final db = await database;
-    var res = await db!.query(table);
+    final res = await db!.query(table);
     List<Teachers> list = res.isNotEmpty
         ? res.map<Teachers>((json) => Teachers.fromJson(json)).toList()
         : [];

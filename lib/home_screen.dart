@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/schedule.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
@@ -26,15 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
       textInputAction: TextInputAction.go,
       submitOnSuggestionTap: true,
       clearOnSubmit: false,
-      style: TextStyle(
-        fontSize: 18,
-        color: Colors.black45,
-      ),
+      style: TextStyle(fontSize: 18),
       decoration: InputDecoration(
           filled: true,
           hintText: 'ТВ-71',
           labelText: 'Group',
-          hintStyle: TextStyle(fontSize: 18, color: Colors.black54),
+          hintStyle: TextStyle(fontSize: 18),
           contentPadding: EdgeInsets.all(10),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -75,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.fromLTRB(20, !ifOpen ? 80 : 20, 20, 20),
@@ -90,8 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         : CrossFadeState.showSecond,
                     duration: Duration(milliseconds: 500)),
                 SizedBox(height: 10),
-                const Text(
-                  'KPI Schedule',
+                Text(
+                  S.of(context).title,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: !ifOpen ? 40 : 20),
@@ -110,8 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            'Please input your group\n(like in example)',
+          Text(
+            S.of(context).homeScreenInput,
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 10),
@@ -135,9 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ]));
   }
 
-  RaisedButton buildConfirmButton(BuildContext context) {
-    return RaisedButton(
-      elevation: 4,
+  ElevatedButton buildConfirmButton(BuildContext context) {
+    return ElevatedButton(
+      style: ButtonStyle(
+          minimumSize: MaterialStateProperty.all(
+            Size(100, 50),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.teal)),
       onPressed: () {
         final controllerText = searchTextField.textField.controller?.text ?? "";
         SharedPref.saveString('groups', controllerText);
@@ -146,12 +147,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => Schedule()));
       },
-      color: Color(0xff5422E2),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(25, 15, 25, 15),
         child: Text(
-          'Confirm',
-          style: TextStyle(color: Colors.white, fontSize: 22),
+          S.of(context).confirm,
+          style: TextStyle(fontSize: 22),
         ),
       ),
     );

@@ -6,9 +6,10 @@ class TeacherSchedules {
   String lessonRoom;
   String lessonType;
   String lessonWeek;
+  String teacherId;
   String timeStart;
   String timeEnd;
-  //List<Groups> groups;
+  String groups;
 
   TeacherSchedules({
     required this.lessonId,
@@ -20,10 +21,21 @@ class TeacherSchedules {
     required this.lessonWeek,
     required this.timeStart,
     required this.timeEnd,
-    //this.groups
+    required this.teacherId,
+    required this.groups,
   });
 
   factory TeacherSchedules.fromJson(Map<String, dynamic> json) {
+    List<String> groups = [];
+    if (json['groups'] != null && json["groups"] is List<dynamic>) {
+      print(json['groups']);
+      json['groups'].forEach((v) {
+        groups.add(v['group_full_name']);
+      });
+    }
+    if (json["groups"] is String) {
+      groups.add(json["groups"]);
+    }
     return TeacherSchedules(
       lessonId: json['lesson_id'],
       dayName: json['day_name'],
@@ -32,15 +44,11 @@ class TeacherSchedules {
       lessonRoom: json['lesson_room'],
       lessonType: json['lesson_type'],
       lessonWeek: json['lesson_week'],
+      teacherId: json['teacher_id'],
       timeStart: json['time_start'],
       timeEnd: json['time_end'],
+      groups: groups.join(' '),
     );
-    // if (json['groups'] != null) {
-    //   groups = new List<Groups>();
-    //   json['groups'].forEach((v) {
-    //     groups.add(new Groups.fromJson(v));
-    //   });
-    // }
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
@@ -51,29 +59,10 @@ class TeacherSchedules {
     data['lesson_room'] = this.lessonRoom;
     data['lesson_type'] = this.lessonType;
     data['lesson_week'] = this.lessonWeek;
+    data['teacher_id'] = this.teacherId;
     data['time_start'] = this.timeStart;
     data['time_end'] = this.timeEnd;
+    data['groups'] = this.groups;
     return data;
   }
 }
-
-// class Groups {
-//   int groupId;
-//   String groupFullName;
-
-//   Groups({required this.groupId, required this.groupFullName});
-
-//   factory Groups.fromJson(Map<String, dynamic> json) {
-//     return Groups(
-//       groupId: json['group_id'],
-//       groupFullName: json['group_full_name'],
-//     );
-//   }
-
-//   Map<String, dynamic> toJson() {
-//     final Map<String, dynamic> data = Map<String, dynamic>();
-//     data['group_id'] = this.groupId;
-//     data['group_full_name'] = this.groupFullName;
-//     return data;
-//   }
-// }

@@ -1,9 +1,15 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:schedule_kpi/Models/lessons.dart';
+
+import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/particles/lesson_block.dart';
 import 'package:schedule_kpi/save_data/db_lessons.dart';
+
+import 'package:schedule_kpi/save_data/db_notes.dart';
+import 'package:schedule_kpi/save_data/language_notifier.dart';
+import 'package:schedule_kpi/save_data/notifier.dart';
 
 class NotesBody extends StatefulWidget {
   const NotesBody({Key? key}) : super(key: key);
@@ -13,19 +19,15 @@ class NotesBody extends StatefulWidget {
 }
 
 class _NotesBodyState extends State<NotesBody> {
-  final _animatedListKey = GlobalKey<AnimatedListState>();
-  Lessons? note;
-  int? _index;
   List<String> list = [];
 
-  Tween<Offset> _offSetTween = Tween(begin: Offset(1, 0), end: Offset.zero);
 //Add Alert dialog to dis
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: FutureBuilder(
-          future: DBLessons.db.select(),
+      body: Consumer<Notifier>(
+        builder: (context, value, child) => FutureBuilder(
+          future: DBNotes.db.select(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -33,152 +35,213 @@ class _NotesBodyState extends State<NotesBody> {
               );
             }
             List<Lessons> data = snapshot.data;
-            var notesList =
-                data.where((item) => item.dateNotes != null).toList();
-            for (var item in notesList) {
-              list.add(item.dateNotes!);
+            if (snapshot.connectionState == ConnectionState.done &&
+                data.isNotEmpty) {
+              final notesList =
+                  data.where((element) => element.dateNotes != null).toList();
+              for (Lessons item in notesList) {
+                list.add(item.dateNotes!);
+              }
+              final ls = list.toSet().toList();
+              return ListView(
+                children: ls
+                    .map((dayName) => Column(
+                          children: [
+                            DayName(
+                              item: dayName,
+                            ),
+                            MyAnimatedList(
+                              animatedListKey: GlobalKey<AnimatedListState>(
+                                  debugLabel: 'debug $dayName'),
+                              notesList: notesList,
+                              item: dayName,
+                            )
+                          ],
+                        ))
+                    .toList(),
+              );
             }
-            var ls = list.toSet().toList();
-            return notesList.isNotEmpty
-                ? ListView(
-                    children: ls
-                        .map((item) => Column(
-                              children: [
-                                Container(
-                                  alignment: Alignment.centerRight,
-                                  padding: const EdgeInsets.fromLTRB(
-                                      15.0, 8.0, 3.0, 8.0),
-                                  //height: MediaQuery.of(context).size.height * 0.05,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.date_range,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 5.0),
-                                        child: Text(
-                                          item,
-                                          style: TextStyle(
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                AnimatedList(
-                                  shrinkWrap: true,
-                                  key: _animatedListKey,
-                                  initialItemCount: notesList.length,
-                                  itemBuilder: (BuildContext context, int index,
-                                      animation) {
-                                    if (notesList[index].dateNotes == item) {
-                                      return FadeTransition(
-                                          opacity: animation,
-                                          child: SlideTransition(
-                                              position: _offSetTween
-                                                  .animate(animation),
-                                              child: Dismissible(
-                                                key: ValueKey(
-                                                    notesList[index].lessonId),
-                                                onDismissed: (direction) {
-                                                  DBLessons.db.updateNotes(
-                                                      notesList[index],
-                                                      null,
-                                                      null,
-                                                      null);
-                                                  setState(() {
-                                                    _index = index;
-                                                    note = notesList[index];
-                                                    notesList.removeAt(index);
-                                                    _animatedListKey
-                                                        .currentState!
-                                                        .removeItem(
-                                                            index,
-                                                            (_, __) =>
-                                                                Container());
-                                                  });
 
-                                                  Scaffold.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                    content: Text('delete'),
-                                                    action: SnackBarAction(
-                                                      label: 'Undo',
-                                                      textColor: Colors.red,
-                                                      onPressed: () {
-                                                        DBLessons.db.updateNotes(
-                                                            note!,
-                                                            note!.description,
-                                                            note!.imagePath,
-                                                            note!.dateNotes);
-                                                        setState(() {
-                                                          notesList.insert(
-                                                              _index!, note!);
-                                                        });
-                                                        try {
-                                                          _animatedListKey
-                                                              .currentState!
-                                                              .insertItem(
-                                                                  _index!);
-                                                        } catch (e) {
-                                                          print(e);
-                                                        }
-                                                      },
-                                                    ),
-                                                  ));
-                                                },
-                                                child: LessonBlock(
-                                                  data: notesList[index],
-                                                  withNotes: true,
-                                                ),
-                                                background: Container(
-                                                  color: Colors.red,
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 20),
-                                                  alignment:
-                                                      AlignmentDirectional
-                                                          .centerStart,
-                                                  child: Icon(
-                                                    Icons.delete,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                secondaryBackground: Container(
-                                                  color: Colors.red,
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 20),
-                                                  alignment:
-                                                      AlignmentDirectional
-                                                          .centerEnd,
-                                                  child: Icon(
-                                                    Icons.delete,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              )));
-                                    } else {
-                                      return Container();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ))
-                        .toList(),
-                  )
-                : Center(
-                    child: Text(
-                      'Double tap on a lesson\n to create a note',
-                      style: TextStyle(fontSize: 30),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
+            return Center(
+              child: Text(
+                S.of(context).notesMessage,
+                style: TextStyle(fontSize: 30),
+                textAlign: TextAlign.center,
+              ),
+            );
           },
         ),
       ),
     );
   }
+}
+
+class DayName extends StatelessWidget {
+  const DayName({
+    Key? key,
+    required this.item,
+  }) : super(key: key);
+  final String item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.fromLTRB(15.0, 8.0, 3.0, 8.0),
+      child: Row(
+        children: [
+          Icon(
+            Icons.date_range,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5.0),
+            child: Text(
+              converToMonthName(context),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String converToMonthName(BuildContext context) {
+    final list = item.split(' ');
+    final month = DateTime(DateTime.now().year, int.tryParse(list[1])!);
+    list[1] = DateFormat.MMMM(context.read<LanguageNotifier>().language)
+        .format(month)
+        .inCaps;
+    return list.join(' ');
+  }
+}
+
+class BackgroundWidget extends StatelessWidget {
+  const BackgroundWidget(
+      {Key? key, required this.alignment, this.padding = 20.0})
+      : super(key: key);
+  final AlignmentDirectional alignment;
+  final double padding;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Theme.of(context).buttonColor,
+      padding: EdgeInsets.symmetric(horizontal: padding),
+      alignment: alignment,
+      child: Icon(
+        Icons.delete,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class MyAnimatedList extends StatefulWidget {
+  MyAnimatedList(
+      {Key? key,
+      required this.animatedListKey,
+      required this.notesList,
+      required this.item})
+      : super(key: key);
+  final GlobalKey<AnimatedListState> animatedListKey;
+  final List<Lessons> notesList;
+  final String item;
+  @override
+  _MyAnimatedListState createState() => _MyAnimatedListState();
+}
+
+class _MyAnimatedListState extends State<MyAnimatedList> {
+  final _offSetTween = Tween(begin: Offset(1, 0), end: Offset.zero);
+  int? _index;
+  Lessons? note;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedList(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      key: widget.animatedListKey,
+      initialItemCount: widget.notesList.length,
+      itemBuilder: (BuildContext context, int index, animation) {
+        if (widget.notesList[index].dateNotes == widget.item) {
+          return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                  position: _offSetTween.animate(animation),
+                  child: Dismissible(
+                    key: UniqueKey(),
+                    onDismissed: (direction) {
+                      showAlertDialog(context, index);
+                    },
+                    child: LessonBlock(
+                      data: widget.notesList[index],
+                      withNotes: true,
+                    ),
+                    background: BackgroundWidget(
+                      alignment: AlignmentDirectional.centerStart,
+                    ),
+                    secondaryBackground: BackgroundWidget(
+                      alignment: AlignmentDirectional.centerEnd,
+                    ),
+                  )));
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+
+  showAlertDialog(BuildContext context, int index) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text(S.of(context).no),
+      onPressed: () {
+        print(index);
+        try {
+          widget.animatedListKey.currentState!.insertItem(_index!);
+        } catch (e) {
+          print(e);
+        }
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text(S.of(context).yes),
+      onPressed: () {
+        DBNotes.db.deleteNote(widget.notesList[index]);
+        DBLessons.db.updateNotes(widget.notesList[index], null, null, null);
+        setState(() {
+          widget.notesList.removeAt(index);
+          widget.animatedListKey.currentState!
+              .removeItem(index, (_, __) => Container());
+        });
+        Provider.of<Notifier>(context, listen: false).notifier();
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(S.of(context).alertTitle),
+      content: Text(S.of(context).alertBody),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+}
+
+extension CapExtension on String {
+  String get inCaps => '${this[0].toUpperCase()}${this.substring(1)}';
 }

@@ -1,40 +1,39 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref {
-  static saveBool(String key, bool value) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setBool(key, value);
+  static SharedPreferences? _sharedPreferences;
+
+  static Future init() async {
+    if (_sharedPreferences == null) {
+      _sharedPreferences = await SharedPreferences.getInstance();
+    }
   }
 
-  static saveString(String key, String value) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setString(key, value);
+  static saveBool(String key, bool value) {
+    _sharedPreferences!.setBool(key, value);
   }
 
-  static saveListString(String key, List<String> value) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setStringList(key, value);
+  static saveString(String key, String value) {
+    _sharedPreferences!.setString(key, value);
+  }
+
+  static saveListString(String key, List<String> value) {
+    _sharedPreferences!.setStringList(key, value);
   }
 
   static Future<bool> loadBool(String key) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    return sharedPreferences.getBool(key) ?? false;
+    return _sharedPreferences!.getBool(key) ?? true;
   }
 
   static Future<String> loadString(String key) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
-    return sharedPreferences.getString(key) ?? '';
+    return _sharedPreferences!.getString(key) ?? '';
   }
 
   static Future<List<String>> loadListString(String key) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
-    return sharedPreferences.getStringList(key) ?? [];
+    return _sharedPreferences!.getStringList(key) ?? [];
   }
 
-  static remove(String key) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.remove(key);
+  static remove(String key) {
+    _sharedPreferences!.remove(key);
   }
 }
