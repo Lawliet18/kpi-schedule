@@ -5,15 +5,15 @@ class ThemeNotifier with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
 
   ThemeMode get themeMode => _themeMode;
-  setThemeMode(ThemeMode mode) async {
+  void setThemeMode(ThemeMode mode) {
     _themeMode = mode;
     notifyListeners();
   }
 
   bool _darkModeOn = false;
   bool get darkModeOn => _darkModeOn;
-  void darkMode(bool value) {
-    _darkModeOn = value;
+  void darkMode({required bool darkMode}) {
+    _darkModeOn = darkMode;
     notifyListeners();
   }
 }

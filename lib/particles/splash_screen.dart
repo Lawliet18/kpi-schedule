@@ -10,11 +10,11 @@ class SplashScreen extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 10),
+          const CircularProgressIndicator(),
+          const SizedBox(height: 10),
           Text(
             S.of(context).firstLoading,
-            style: TextStyle(color: Colors.black, fontSize: 24),
+            style: const TextStyle(color: Colors.black, fontSize: 24),
           )
         ],
       ),

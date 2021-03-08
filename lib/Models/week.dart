@@ -4,6 +4,6 @@ class Week {
   Week({required this.data});
 
   factory Week.fromJson(Map<String, dynamic> json) {
-    return Week(data: json['data']);
+    return Week(data: json['data'] as int);
   }
 }

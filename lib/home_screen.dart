@@ -1,11 +1,12 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
+
 import 'package:schedule_kpi/generated/l10n.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
-import 'package:schedule_kpi/schedule.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:schedule_kpi/save_data/shared_prefs.dart';
+import 'package:schedule_kpi/schedule.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<String> groups;
@@ -25,26 +26,26 @@ class _HomeScreenState extends State<HomeScreen> {
     searchTextField = AutoCompleteTextField<String>(
       onFocusChanged: (hasFocus) {},
       textInputAction: TextInputAction.go,
-      submitOnSuggestionTap: true,
       clearOnSubmit: false,
-      style: TextStyle(fontSize: 18),
+      style: const TextStyle(fontSize: 18),
       decoration: InputDecoration(
           filled: true,
           hintText: 'ТВ-71',
           labelText: 'Group',
-          hintStyle: TextStyle(fontSize: 18),
-          contentPadding: EdgeInsets.all(10),
+          hintStyle: const TextStyle(fontSize: 18),
+          contentPadding: const EdgeInsets.all(10),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.transparent),
+            borderSide: const BorderSide(color: Colors.transparent),
           ),
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none)),
+          focusedBorder:
+              const UnderlineInputBorder(borderSide: BorderSide.none)),
       itemBuilder: (context, item) {
         return Container(
-          padding: EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
           child: Text(
             item,
-            style: TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14),
           ),
         );
       },
@@ -57,13 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
       itemSubmitted: (item) {
         setState(() => searchTextField.textField.controller?.text = item);
       },
-      textSubmitted: (item) {
-        print(item);
-      },
       key: _key,
       suggestions: widget.groups,
     );
-    var keyboardVisibilityController = KeyboardVisibilityController();
+    final keyboardVisibilityController = KeyboardVisibilityController();
     keyboardVisibilityController.onChange.listen((bool visible) {
       ifOpen = visible;
     });
@@ -80,16 +78,18 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 AnimatedCrossFade(
-                    firstChild: Image(image: AssetImage("assets/img/logo.png")),
+                    firstChild:
+                        const Image(image: AssetImage("assets/img/logo.png")),
                     secondChild: Container(),
                     crossFadeState: !ifOpen
                         ? CrossFadeState.showFirst
                         : CrossFadeState.showSecond,
-                    duration: Duration(milliseconds: 500)),
-                SizedBox(height: 10),
+                    duration: const Duration(milliseconds: 500)),
+                const SizedBox(height: 10),
                 Text(
                   S.of(context).title,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: !ifOpen ? 40 : 20),
                 buildTextField(
@@ -111,9 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
             S.of(context).homeScreenInput,
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           buildField(context),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           buildConfirmButton(context)
         ],
       ),
@@ -136,22 +136,22 @@ class _HomeScreenState extends State<HomeScreen> {
     return ElevatedButton(
       style: ButtonStyle(
           minimumSize: MaterialStateProperty.all(
-            Size(100, 50),
+            const Size(100, 50),
           ),
           backgroundColor: MaterialStateProperty.all<Color>(Colors.teal)),
       onPressed: () {
         final controllerText = searchTextField.textField.controller?.text ?? "";
-        SharedPref.saveString('groups', controllerText);
+        SharedPref.sharedPref.saveString('groups', controllerText);
         Provider.of<Notifier>(context, listen: false)
             .addGroupName(controllerText);
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Schedule()));
+            .push(MaterialPageRoute(builder: (context) => const Schedule()));
       },
       child: Padding(
         padding: const EdgeInsets.fromLTRB(25, 15, 25, 15),
         child: Text(
           S.of(context).confirm,
-          style: TextStyle(fontSize: 22),
+          style: const TextStyle(fontSize: 22),
         ),
       ),
     );

@@ -20,63 +20,64 @@ class YourNotes extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
-            title: Text(S.of(context).noteFor + ' ' + data.lessonName),
+            title: Text('${S.of(context).noteFor} ${data.lessonName}'),
             centerTitle: true,
           ),
           body: Stack(children: [
             ListView(
               children: [
-                list.isNotEmpty
-                    ? Column(
-                        children: [
-                          CategoryName(icon: Icons.image, name: 'Your images'),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: GridView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: list.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 5,
-                                  crossAxisSpacing: 5,
-                                ),
-                                itemBuilder: (context, index) {
-                                  File file;
-                                  try {
-                                    file = File(list[index]);
+                if (list.isNotEmpty)
+                  Column(
+                    children: [
+                      const CategoryName(
+                          icon: Icons.image, name: 'Your images'),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: list.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 5,
+                              crossAxisSpacing: 5,
+                            ),
+                            itemBuilder: (context, index) {
+                              File file;
+                              try {
+                                file = File(list[index]);
 
-                                    return GestureDetector(
-                                        onTap: () => Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailImage(
-                                                        path: list[index],
-                                                        index: index))),
-                                        child: Hero(
-                                            tag: list[index] + index.toString(),
-                                            child: Image.file(file)));
-                                  } catch (e) {
-                                    print(e);
-                                    return Container();
-                                  }
-                                }),
-                          ),
-                        ],
-                      )
-                    : Container(),
-                data.description!.isNotEmpty
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CategoryName(
-                              icon: Icons.text_fields,
-                              name: S.of(context).yourDescription),
-                          BuildDescription(list: data.description!.split(' '))
-                        ],
-                      )
-                    : Container()
+                                return GestureDetector(
+                                    onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) => DetailImage(
+                                                path: list[index],
+                                                index: index))),
+                                    child: Hero(
+                                        tag: list[index] + index.toString(),
+                                        child: Image.file(file)));
+                              } catch (e) {
+                                return Container();
+                              }
+                            }),
+                      ),
+                    ],
+                  )
+                else
+                  Container(),
+                if (data.description!.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CategoryName(
+                          icon: Icons.text_fields,
+                          name: S.of(context).yourDescription),
+                      BuildDescription(list: data.description!.split(' '))
+                    ],
+                  )
+                else
+                  Container()
               ],
             ),
             Padding(
@@ -89,11 +90,12 @@ class YourNotes extends StatelessWidget {
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.pressed))
+                          if (states.contains(MaterialState.pressed)) {
                             return Theme.of(context)
                                 .colorScheme
                                 .primary
                                 .withOpacity(0.5);
+                          }
                           return Theme.of(context)
                               .colorScheme
                               .primary; // Use the component's default.
@@ -107,7 +109,7 @@ class YourNotes extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         S.of(context).changeNotes,
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
                   ),

@@ -28,7 +28,7 @@ class TeacherScheduleWidget extends StatefulWidget {
 class _TeacherScheduleWidgetState extends State<TeacherScheduleWidget> {
   @override
   Widget build(BuildContext context) {
-    List<String> listUA = [
+    final List<String> listUA = [
       'Понеділок',
       'Вівторок',
       'Середа',
@@ -53,8 +53,8 @@ class _TeacherScheduleWidgetState extends State<TeacherScheduleWidget> {
                         fontSize: widget.teacherName.length > 30 ? 15 : 18),
                   ),
                 ),
-                SizedBox(width: 10),
-                CurrentWeek(),
+                const SizedBox(width: 10),
+                const CurrentWeek(),
               ],
             ),
             centerTitle: true,
@@ -80,11 +80,11 @@ class BuildList extends StatelessWidget {
       builder: (context, value, child) {
         final week = value.week;
         final List l = [];
-        list.forEach((e) {
-          l.addAll(e
+        for (final item in list) {
+          l.addAll(item
               .where((element) => element.lessonWeek == week.toStr())
               .toList());
-        });
+        }
         return l.isNotEmpty
             ? ListView(
                 children: list.map((e) {
@@ -95,12 +95,12 @@ class BuildList extends StatelessWidget {
                     ? Container()
                     : Card(
                         elevation: 6,
-                        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           child: ListView.builder(
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: listOfLessonWeek.length,
                             itemBuilder: (BuildContext context, int index) {
                               return TeacherParticles(
@@ -114,7 +114,7 @@ class BuildList extends StatelessWidget {
             : Center(
                 child: Text(
                   S.of(context).teacherFree,
-                  style: TextStyle(fontSize: 36),
+                  style: const TextStyle(fontSize: 36),
                 ),
               );
       },
@@ -139,39 +139,40 @@ class TeacherParticles extends StatelessWidget {
         child: data[index].lessonWeek == lessonWeek.toStr()
             ? Column(
                 children: [
-                  index == 0
-                      ? Text(
-                          data[index].dayName,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2),
-                        )
-                      : Divider(
-                          color: Colors.black,
-                        ),
-                  SizedBox(height: 10),
+                  if (index == 0)
+                    Text(
+                      data[index].dayName,
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2),
+                    )
+                  else
+                    const Divider(
+                      color: Colors.black,
+                    ),
+                  const SizedBox(height: 10),
                   Text(
                     data[index].lessonFullName,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 1),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Container(
                     alignment: Alignment.center,
                     height: 30,
                     child: Row(
                       children: [
                         Text(
-                          S.of(context).groups + ' ',
-                          style: TextStyle(fontSize: 16),
+                          '${S.of(context).groups} ',
+                          style: const TextStyle(fontSize: 16),
                         ),
                         Expanded(
                           child: Text(
                             data[index].groups,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontStyle: FontStyle.italic, fontSize: 16),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -185,13 +186,11 @@ class TeacherParticles extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text(S.of(context).type + ' ',
-                              style: TextStyle(fontSize: 16)),
+                          Text('${S.of(context).type} ',
+                              style: const TextStyle(fontSize: 16)),
                           Text(
-                            data[index].lessonType +
-                                ' ' +
-                                data[index].lessonRoom,
-                            style: TextStyle(
+                            '${data[index].lessonType} ${data[index].lessonRoom}',
+                            style: const TextStyle(
                                 fontSize: 16, fontStyle: FontStyle.italic),
                           ),
                         ],
@@ -200,11 +199,11 @@ class TeacherParticles extends StatelessWidget {
                         children: [
                           Text(
                             data[index].timeStart.substring(0, 5),
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           ),
                           Text(
                             data[index].timeEnd.substring(0, 5),
-                            style: TextStyle(fontSize: 18),
+                            style: const TextStyle(fontSize: 18),
                           )
                         ],
                       )

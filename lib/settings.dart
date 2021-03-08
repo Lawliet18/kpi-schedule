@@ -10,9 +10,9 @@ import 'package:schedule_kpi/save_data/notifier.dart';
 import 'package:schedule_kpi/save_data/shared_prefs.dart';
 import 'package:schedule_kpi/save_data/theme_notifier.dart';
 import 'package:schedule_kpi/schedule.dart';
-import 'particles/current_week.dart';
 
 import 'generated/l10n.dart';
+import 'particles/current_week.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -41,14 +41,15 @@ class _SettingsState extends State<Settings> {
       body: Column(
         children: [
           CategoryName(name: S.of(context).myGroup, icon: Icons.people_outline),
-          ChangeGroup(),
+          const ChangeGroup(),
           Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   S.of(context).currentWeek,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
@@ -56,18 +57,17 @@ class _SettingsState extends State<Settings> {
                 ),
                 Text(
                   context.read<Notifier>().currentWeek.toStr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                   ),
                 )
               ],
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
             ),
           ),
           CategoryName(name: S.of(context).colorSettings, icon: Icons.colorize),
-          ChangeTheme(),
+          const ChangeTheme(),
           CategoryName(
               name: S.of(context).anotherSettings, icon: Icons.library_books),
           ClearButton(
@@ -77,7 +77,7 @@ class _SettingsState extends State<Settings> {
               DBNotes.db.delete();
               DBLessons.db.deleteNotes();
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Schedule(
+                  builder: (context) => const Schedule(
                         onSavedNotes: 2,
                       )));
             },
@@ -89,8 +89,8 @@ class _SettingsState extends State<Settings> {
               DBLessons.db.delete();
               DBTeacherSchedule.db.delete();
               DBTeachers.db.delete();
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => Schedule()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const Schedule()));
             },
           ),
           Padding(
@@ -100,7 +100,7 @@ class _SettingsState extends State<Settings> {
               children: [
                 Text(
                   S.of(context).languageChange,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     letterSpacing: 1.2,
                   ),
@@ -110,8 +110,8 @@ class _SettingsState extends State<Settings> {
                     value: _value,
                     items: language
                         .map((String item) => DropdownMenuItem<String>(
-                              child: Text(item),
                               value: item,
+                              child: Text(item),
                             ))
                         .toList(),
                     onChanged: (item) {
@@ -140,7 +140,7 @@ class _SettingsState extends State<Settings> {
   }
 
   void setLanguageButton(String? item) {
-    SharedPref.saveString('language', item!.toLowerCase());
+    SharedPref.sharedPref.saveString('language', item!.toLowerCase());
     setState(() {
       _value = item;
       S.load(Locale(item.toLowerCase(), ''));
@@ -170,7 +170,7 @@ class ClearButton extends StatelessWidget {
         children: [
           Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               letterSpacing: 1.2,
             ),
@@ -179,14 +179,14 @@ class ClearButton extends StatelessWidget {
             style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.all(Theme.of(context).accentColor)),
+            onPressed: onPressed,
             child: Text(
               buttonText,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 letterSpacing: 1.2,
               ),
             ),
-            onPressed: onPressed,
           )
         ],
       ),
@@ -204,21 +204,20 @@ class ChangeTheme extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
         children: [
           Text(
             S.of(context).darkTheme,
-            style: TextStyle(fontSize: 18),
+            style: const TextStyle(fontSize: 18),
           ),
           Switch(
             value: context.watch<ThemeNotifier>().darkModeOn,
             onChanged: (value) {
-              themeMode.darkMode(value);
+              themeMode.darkMode(darkMode: value);
               if (value) {
                 themeMode.setThemeMode(ThemeMode.dark);
-                SharedPref.saveBool('darkMode', value);
+                SharedPref.sharedPref.saveBool('darkMode', value: value);
               } else {
-                SharedPref.saveBool('darkMode', value);
+                SharedPref.sharedPref.saveBool('darkMode', value: value);
                 themeMode.setThemeMode(ThemeMode.light);
               }
             },
@@ -243,7 +242,7 @@ class ChangeGroup extends StatelessWidget {
         children: [
           Text(
             context.watch<Notifier>().groupName.toUpperCase(),
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
@@ -255,10 +254,10 @@ class ChangeGroup extends StatelessWidget {
                 DBLessons.db.delete();
                 DBTeacherSchedule.db.delete();
                 DBTeachers.db.delete();
-                SharedPref.remove('groups');
+                SharedPref.sharedPref.remove('groups');
                 context.read<Notifier>().removeGroupName();
                 Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => MyApp()));
+                    MaterialPageRoute(builder: (context) => const MyApp()));
               },
               child: Container(
                 alignment: Alignment.centerRight,
@@ -293,16 +292,16 @@ class CategoryName extends StatelessWidget {
       type: MaterialType.card,
       elevation: 1,
       child: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Row(
           children: [
             Icon(
               icon,
             ),
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             Text(
               name,
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             )
           ],
         ),

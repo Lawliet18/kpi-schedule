@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  get darkTheme => ThemeData(
-        colorScheme: ColorScheme(
+  ThemeData get darkTheme => ThemeData(
+        colorScheme: const ColorScheme(
           brightness: Brightness.dark,
           primary: Color(0xffbb86fc),
           primaryVariant: Color(0xff3700b3),
@@ -24,7 +24,7 @@ class AppTheme {
         // accentColor: Colors.teal[200],
         fontFamily: 'DniproCity',
       );
-  get lightTheme => ThemeData(
+  ThemeData get lightTheme => ThemeData(
         //colorScheme: ColorScheme.light(),
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.grey[200],

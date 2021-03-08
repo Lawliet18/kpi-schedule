@@ -16,22 +16,23 @@ class Teachers {
 
   factory Teachers.fromJson(Map<String, dynamic> json) {
     return Teachers(
-        teacherId: json['teacher_id'],
-        teacherName: json['teacher_name'],
-        teacherFullName: json['teacher_full_name'],
-        teacherShortName: json['teacher_short_name'],
-        teacherUrl: json['teacher_url'],
-        teacherRating: json['teacher_rating']);
+      teacherId: json['teacher_id'] as String,
+      teacherName: json['teacher_name'] as String,
+      teacherFullName: json['teacher_full_name'] as String,
+      teacherShortName: json['teacher_short_name'] as String,
+      teacherUrl: json['teacher_url'] as String,
+      teacherRating: json['teacher_rating'] as String,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['teacher_id'] = this.teacherId;
-    data['teacher_name'] = this.teacherName;
-    data['teacher_full_name'] = this.teacherFullName;
-    data['teacher_short_name'] = this.teacherShortName;
-    data['teacher_url'] = this.teacherUrl;
-    data['teacher_rating'] = this.teacherRating;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['teacher_id'] = teacherId;
+    data['teacher_name'] = teacherName;
+    data['teacher_full_name'] = teacherFullName;
+    data['teacher_short_name'] = teacherShortName;
+    data['teacher_url'] = teacherUrl;
+    data['teacher_rating'] = teacherRating;
     return data;
   }
 }

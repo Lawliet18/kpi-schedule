@@ -32,13 +32,13 @@ class _ScheduleState extends State<Schedule>
         TabController(length: 6, vsync: this, initialIndex: currentDay - 1);
     _widgetOptionBody = <Widget>[
       ScheduleBody(controller: _controller),
-      TeacherBody(),
-      NotesBody(),
+      const TeacherBody(),
+      const NotesBody(),
     ];
     _widgetOptionAppBar = <Widget>[
       ScheduleAppBar(controller: _controller),
-      TeacherAppBar(),
-      NotesAppBar(),
+      const TeacherAppBar(),
+      const NotesAppBar(),
     ];
   }
 
@@ -53,9 +53,10 @@ class _ScheduleState extends State<Schedule>
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
+          preferredSize: _selectedValue == 0
+              ? const Size.fromHeight(90)
+              : const Size.fromHeight(60),
           child: _widgetOptionAppBar.elementAt(_selectedValue),
-          preferredSize:
-              _selectedValue == 0 ? Size.fromHeight(90) : Size.fromHeight(60),
         ),
         body: _widgetOptionBody.elementAt(_selectedValue),
         bottomNavigationBar: BottomNavigationBar(
@@ -68,21 +69,21 @@ class _ScheduleState extends State<Schedule>
           currentIndex: _selectedValue,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(
+              icon: const Icon(
                 Icons.book,
                 size: 26,
               ),
               label: S.of(context).schedule,
             ),
             BottomNavigationBarItem(
-              icon: Icon(
+              icon: const Icon(
                 Icons.people,
                 size: 26,
               ),
               label: S.of(context).teacher,
             ),
             BottomNavigationBarItem(
-              icon: Icon(
+              icon: const Icon(
                 Icons.notes,
                 size: 26,
               ),

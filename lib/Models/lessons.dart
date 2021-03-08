@@ -31,37 +31,37 @@ class Lessons {
 
   factory Lessons.fromJson(Map<String, dynamic> json) {
     return Lessons(
-      lessonId: json['lesson_id'],
-      dayName: json['day_name'],
-      lessonName: json['lesson_name'],
-      lessonNumber: json['lesson_number'],
-      lessonRoom: json['lesson_room'],
-      lessonType: json['lesson_type'],
-      teacherName: json['teacher_name'],
-      lessonWeek: json['lesson_week'],
-      timeStart: json['time_start'],
-      timeEnd: json['time_end'],
-      dateNotes: json['notes_date'],
-      description: json['description'],
-      imagePath: json['image_path'],
+      lessonId: json['lesson_id'] as String,
+      dayName: json['day_name'] as String,
+      lessonName: json['lesson_name'] as String,
+      lessonNumber: json['lesson_number'] as String,
+      lessonRoom: json['lesson_room'] as String,
+      lessonType: json['lesson_type'] as String,
+      teacherName: json['teacher_name'] as String,
+      lessonWeek: json['lesson_week'] as String,
+      timeStart: json['time_start'] as String,
+      timeEnd: json['time_end'] as String,
+      dateNotes: json['notes_date'] as String,
+      description: json['description'] as String,
+      imagePath: json['image_path'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['lesson_id'] = this.lessonId;
-    data['day_name'] = this.dayName;
-    data['lesson_name'] = this.lessonName;
-    data['lesson_number'] = this.lessonNumber;
-    data['lesson_room'] = this.lessonRoom;
-    data['lesson_type'] = this.lessonType;
-    data['teacher_name'] = this.teacherName;
-    data['lesson_week'] = this.lessonWeek;
-    data['time_start'] = this.timeStart;
-    data['time_end'] = this.timeEnd;
-    data['notes_date'] = this.dateNotes;
-    data['description'] = this.description;
-    data['image_path'] = this.imagePath;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['lesson_id'] = lessonId;
+    data['day_name'] = dayName;
+    data['lesson_name'] = lessonName;
+    data['lesson_number'] = lessonNumber;
+    data['lesson_room'] = lessonRoom;
+    data['lesson_type'] = lessonType;
+    data['teacher_name'] = teacherName;
+    data['lesson_week'] = lessonWeek;
+    data['time_start'] = timeStart;
+    data['time_end'] = timeEnd;
+    data['notes_date'] = dateNotes;
+    data['description'] = description;
+    data['image_path'] = imagePath;
     return data;
   }
 }

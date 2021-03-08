@@ -13,18 +13,19 @@ class Notes {
 
   factory Notes.fromJson(Map<String, dynamic> json) {
     return Notes(
-        lessonId: json['lesson_id'],
-        dateNotes: json['notes_date'],
-        description: json['description'],
-        imagePath: json['image_path']);
+      lessonId: json['lesson_id'] as String,
+      dateNotes: json['notes_date'] as String,
+      description: json['description'] as String,
+      imagePath: json['image_path'] as String,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['lesson_id'] = this.lessonId;
-    data['notes_date'] = this.dateNotes;
-    data['description'] = this.description;
-    data['image_path'] = this.imagePath;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['lesson_id'] = lessonId;
+    data['notes_date'] = dateNotes;
+    data['description'] = description;
+    data['image_path'] = imagePath;
     return data;
   }
 }

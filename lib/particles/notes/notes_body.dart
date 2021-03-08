@@ -30,16 +30,16 @@ class _NotesBodyState extends State<NotesBody> {
           future: DBNotes.db.select(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            List<Lessons> data = snapshot.data;
+            final data = snapshot.data as List<Lessons>;
             if (snapshot.connectionState == ConnectionState.done &&
                 data.isNotEmpty) {
               final notesList =
                   data.where((element) => element.dateNotes != null).toList();
-              for (Lessons item in notesList) {
+              for (final item in notesList) {
                 list.add(item.dateNotes!);
               }
               final ls = list.toSet().toList();
@@ -65,7 +65,7 @@ class _NotesBodyState extends State<NotesBody> {
             return Center(
               child: Text(
                 S.of(context).notesMessage,
-                style: TextStyle(fontSize: 30),
+                style: const TextStyle(fontSize: 30),
                 textAlign: TextAlign.center,
               ),
             );
@@ -90,17 +90,17 @@ class DayName extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(15.0, 8.0, 3.0, 8.0),
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.date_range,
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Padding(
             padding: const EdgeInsets.only(top: 5.0),
             child: Text(
               converToMonthName(context),
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -130,7 +130,7 @@ class BackgroundWidget extends StatelessWidget {
       color: Theme.of(context).buttonColor,
       padding: EdgeInsets.symmetric(horizontal: padding),
       alignment: alignment,
-      child: Icon(
+      child: const Icon(
         Icons.delete,
         color: Colors.white,
       ),
@@ -139,7 +139,7 @@ class BackgroundWidget extends StatelessWidget {
 }
 
 class MyAnimatedList extends StatefulWidget {
-  MyAnimatedList(
+  const MyAnimatedList(
       {Key? key,
       required this.animatedListKey,
       required this.notesList,
@@ -153,15 +153,15 @@ class MyAnimatedList extends StatefulWidget {
 }
 
 class _MyAnimatedListState extends State<MyAnimatedList> {
-  final _offSetTween = Tween(begin: Offset(1, 0), end: Offset.zero);
-  int? _index;
+  final _offSetTween = Tween(begin: const Offset(1, 0), end: Offset.zero);
+  late int? _index;
   Lessons? note;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedList(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       key: widget.animatedListKey,
       initialItemCount: widget.notesList.length,
       itemBuilder: (BuildContext context, int index, animation) {
@@ -175,15 +175,15 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
                     onDismissed: (direction) {
                       showAlertDialog(context, index);
                     },
+                    background: const BackgroundWidget(
+                      alignment: AlignmentDirectional.centerStart,
+                    ),
+                    secondaryBackground: const BackgroundWidget(
+                      alignment: AlignmentDirectional.centerEnd,
+                    ),
                     child: LessonBlock(
                       data: widget.notesList[index],
                       withNotes: true,
-                    ),
-                    background: BackgroundWidget(
-                      alignment: AlignmentDirectional.centerStart,
-                    ),
-                    secondaryBackground: BackgroundWidget(
-                      alignment: AlignmentDirectional.centerEnd,
                     ),
                   )));
         } else {
@@ -193,22 +193,20 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
     );
   }
 
-  showAlertDialog(BuildContext context, int index) {
+  Future<void> showAlertDialog(BuildContext context, int index) async {
     // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text(S.of(context).no),
+    final Widget cancelButton = TextButton(
       onPressed: () {
-        print(index);
         try {
           widget.animatedListKey.currentState!.insertItem(_index!);
-        } catch (e) {
-          print(e);
+        } catch (_) {
+          rethrow;
         }
         Navigator.pop(context);
       },
+      child: Text(S.of(context).no),
     );
-    Widget continueButton = TextButton(
-      child: Text(S.of(context).yes),
+    final continueButton = TextButton(
       onPressed: () {
         DBNotes.db.deleteNote(widget.notesList[index]);
         DBLessons.db.updateNotes(widget.notesList[index], null, null, null);
@@ -220,10 +218,11 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
         Provider.of<Notifier>(context, listen: false).notifier();
         Navigator.pop(context);
       },
+      child: Text(S.of(context).yes),
     );
 
     // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
+    final alert = AlertDialog(
       title: Text(S.of(context).alertTitle),
       content: Text(S.of(context).alertBody),
       actions: [
@@ -243,5 +242,5 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
 }
 
 extension CapExtension on String {
-  String get inCaps => '${this[0].toUpperCase()}${this.substring(1)}';
+  String get inCaps => '${this[0].toUpperCase()}${substring(1)}';
 }

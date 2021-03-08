@@ -34,20 +34,20 @@ class _AddingNotesState extends State<AddingNotes> {
           title: Text(S.of(context).createNotes),
           actions: [
             IconButton(
-              icon: Icon(Icons.info_rounded),
+              icon: const Icon(Icons.info_rounded),
               onPressed: () {},
               tooltip: S.of(context).notesTooltip,
             )
           ],
         ),
-        body: Container(
+        body: SizedBox(
           height: MediaQuery.of(context).size.height,
           child: Column(
             children: [
               LessonBlock(
                 data: widget.data,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Expanded(child: BuildListOfData(data: widget.data))
@@ -56,7 +56,7 @@ class _AddingNotesState extends State<AddingNotes> {
         ),
         bottomNavigationBar: Consumer<Notifier>(
           builder: (context, value, child) => Container(
-            margin: EdgeInsets.only(left: 50, right: 50, bottom: 10),
+            margin: const EdgeInsets.only(left: 50, right: 50, bottom: 10),
             child: ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
@@ -76,7 +76,8 @@ class _AddingNotesState extends State<AddingNotes> {
                     : null,
                 child: Text(
                   S.of(context).save,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
                 )),
           ),
         ),
@@ -85,17 +86,17 @@ class _AddingNotesState extends State<AddingNotes> {
           onPressed: () =>
               CustomImagePicker.imagePicker.onImageButtonPressed(context),
           tooltip: 'Image',
-          child: Icon(Icons.image),
+          child: const Icon(Icons.image),
         ),
       ),
     );
   }
 
-  _saveNotes(Lessons data, String text) {
+  void _saveNotes(Lessons data, String text) {
     final list = Provider.of<Notifier>(context, listen: false).list;
     final images = list.join(' ');
     final date = DateTime.now();
-    String time = "${date.day} ${date.month}";
+    final time = "${date.day} ${date.month}";
     DBLessons.db.updateNotes(data, text, images, time);
     if (widget.data.dateNotes != null) {
       DBNotes.db.updateNotes(data, text, images, time);
@@ -106,7 +107,7 @@ class _AddingNotesState extends State<AddingNotes> {
     Provider.of<Notifier>(context, listen: false).clearimagePath();
     Provider.of<Notifier>(context, listen: false).changeEditingType();
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => Schedule(
+        builder: (context) => const Schedule(
               onSavedNotes: 2,
             )));
   }
@@ -121,12 +122,11 @@ class BuildListOfData extends StatefulWidget {
 }
 
 class _BuildListOfDataState extends State<BuildListOfData> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    print(widget.data.description);
 
     if (widget.data.description != null &&
         widget.data.description!.isNotEmpty) {
@@ -140,7 +140,7 @@ class _BuildListOfDataState extends State<BuildListOfData> {
         });
       }
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -159,35 +159,36 @@ class _BuildListOfDataState extends State<BuildListOfData> {
           mainAxisSize: MainAxisSize.min,
           children: [
             CategoryName(name: S.of(context).text, icon: Icons.text_fields),
-            value.editingType
-                ? TextFormField(
-                    style: TextStyle(fontSize: 22),
-                    minLines: 1,
-                    maxLines: 10,
-                    autofocus: true,
-                    controller: _controller,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: () {
-                      value.changeEditingType();
-                      value.addTextData(_controller.text);
-                    },
-                    decoration: InputDecoration(
-                        hintText: 'Print something',
-                        contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10)),
-                  )
-                : Builder(builder: (context) {
-                    List<String> list = _controller.text.split(' ');
-                    return GestureDetector(
-                        onTap: () => value.changeEditingType(),
-                        child: BuildDescription(list: list));
-                  }),
+            if (value.editingType)
+              TextFormField(
+                style: const TextStyle(fontSize: 22),
+                minLines: 1,
+                maxLines: 10,
+                autofocus: true,
+                controller: _controller,
+                textInputAction: TextInputAction.done,
+                onEditingComplete: () {
+                  value.changeEditingType();
+                  value.addTextData(_controller.text);
+                },
+                decoration: const InputDecoration(
+                    hintText: 'Print something',
+                    contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10)),
+              )
+            else
+              Builder(builder: (context) {
+                final List<String> list = _controller.text.split(' ');
+                return GestureDetector(
+                    onTap: () => value.changeEditingType(),
+                    child: BuildDescription(list: list));
+              }),
           ],
         ),
         AnimatedCrossFade(
           crossFadeState: value.list.isNotEmpty
               ? CrossFadeState.showFirst
               : CrossFadeState.showSecond,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           firstChild: FutureBuilder(
               future: CustomImagePicker.imagePicker.retrieveLostData(),
               builder: (context, snapshot) {
@@ -199,55 +200,56 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                         CategoryName(
                             name: S.of(context).images, icon: Icons.image),
                         GridView.builder(
-                            padding: EdgeInsets.all(5.0),
+                            padding: const EdgeInsets.all(5.0),
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: value.list.length,
                             gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                                     mainAxisSpacing: 10,
                                     crossAxisSpacing: 10,
                                     crossAxisCount: 2),
                             itemBuilder: (context, index) {
                               return GestureDetector(
-                                child: Hero(
-                                  tag: value.list[index] + index.toString(),
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    height:
-                                        MediaQuery.of(context).size.width * 4.5,
-                                    margin: EdgeInsets.all(1.0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Dismissible(
-                                        key: UniqueKey(),
-                                        background: BackgroundWidget(
-                                          alignment:
-                                              AlignmentDirectional.centerStart,
-                                          padding: 10,
-                                        ),
-                                        secondaryBackground: BackgroundWidget(
-                                          alignment:
-                                              AlignmentDirectional.centerEnd,
-                                          padding: 10,
-                                        ),
-                                        child: Image.file(
-                                          File(value.list[index]),
-                                          fit: BoxFit.cover,
-                                        ),
-                                        onDismissed: (direction) =>
-                                            Provider.of<Notifier>(context)
-                                                .deleteImagePath(index),
-                                      ),
-                                    ),
-                                  ),
-                                ),
                                 onTap: () => Navigator.of(context)
                                     .push(MaterialPageRoute(
                                         builder: (context) => DetailImage(
                                               path: value.list[index],
                                               index: index,
                                             ))),
+                                child: Hero(
+                                  tag: value.list[index] + index.toString(),
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    height:
+                                        MediaQuery.of(context).size.width * 4.5,
+                                    margin: const EdgeInsets.all(1.0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Dismissible(
+                                        key: UniqueKey(),
+                                        background: const BackgroundWidget(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          padding: 10,
+                                        ),
+                                        secondaryBackground:
+                                            const BackgroundWidget(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          padding: 10,
+                                        ),
+                                        onDismissed: (direction) =>
+                                            Provider.of<Notifier>(context)
+                                                .deleteImagePath(index),
+                                        child: Image.file(
+                                          File(value.list[index]),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               );
                             }),
                       ],
@@ -283,7 +285,7 @@ class BuildDescription extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
       child: list[0] == '' && list.length == 1
-          ? Text(
+          ? const Text(
               'Type on me to print something',
               style: TextStyle(fontSize: 24),
             )
@@ -292,14 +294,14 @@ class BuildDescription extends StatelessWidget {
                   children: list.map((e) {
                 return !e.startsWith('#')
                     ? TextSpan(
-                        text: e + ' ',
-                        style: TextStyle(
+                        text: '$e ',
+                        style: const TextStyle(
                             fontSize: 22,
                             //color: Colors.black,
                             fontFamily: 'DniproCity'),
                       )
                     : TextSpan(
-                        text: e.substring(1) + ' ',
+                        text: '${e.substring(1)} ',
                         style: TextStyle(
                             fontSize: 22,
                             color: Theme.of(context).accentColor,

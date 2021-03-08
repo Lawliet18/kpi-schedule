@@ -9,22 +9,21 @@ class DBLessons implements Table {
   String table = 'Lessons';
 
   static Database? _database;
+  @override
   Future<Database?> get database async {
     if (_database != null) return _database;
-    _database = await initDB();
-    return _database;
+    return initDB();
   }
 
   @override
-  initDB() async {
+  Future<Database> initDB() async {
     final documentsDirectory = await getDatabasesPath();
-    String path = join(documentsDirectory!, "lessons_table.db");
-    return await openDatabase(path,
-        version: 1, onOpen: (db) {}, onCreate: onCreate);
+    final path = join(documentsDirectory!, "lessons_table.db");
+    return openDatabase(path, version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
 
   @override
-  onCreate(Database db, int version) async {
+  Future<void> onCreate(Database db, int version) async {
     await db.execute("""
     CREATE TABLE $table (
         lesson_id TEXT PRIMARY KEY,
@@ -43,9 +42,9 @@ class DBLessons implements Table {
         )""");
   }
 
-  insert(Lessons newLessons) async {
+  Future<int> insert(Lessons newLessons) async {
     final db = await database;
-    var res = await db!.insert(table, newLessons.toJson());
+    final res = await db!.insert(table, newLessons.toJson());
     return res;
   }
 
@@ -53,29 +52,29 @@ class DBLessons implements Table {
   Future<List<Lessons>> select() async {
     final db = await database;
     final res = await db!.query(table);
-    List<Lessons> list = res.isNotEmpty
+    final list = res.isNotEmpty
         ? res.map<Lessons>((json) => Lessons.fromJson(json)).toList()
-        : [];
+        : [] as List<Lessons>;
     return list;
   }
 
   @override
-  delete() async {
+  Future<void> delete() async {
     final db = await database;
     await db!.delete(table);
   }
 
-  update(Lessons lessons) async {
+  Future<int> update(Lessons lessons) async {
     final db = await database;
-    var res = await db!.update(table, lessons.toJson(),
+    final res = await db!.update(table, lessons.toJson(),
         where: "lesson_id = ?", whereArgs: [lessons.lessonId]);
     return res;
   }
 
-  updateNotes(Lessons lessons, String? description, String? imagePath,
-      String? date) async {
+  Future<int> updateNotes(Lessons lessons, String? description,
+      String? imagePath, String? date) async {
     final db = await database;
-    var res = await db!.rawUpdate("""
+    final res = await db!.rawUpdate("""
     UPDATE $table
     SET description = ? , image_path = ? , notes_date = ?
     WHERE lesson_id = ?
@@ -83,7 +82,7 @@ class DBLessons implements Table {
     return res;
   }
 
-  deleteNotes() async {
+  Future<void> deleteNotes() async {
     final db = await database;
     await db!.rawUpdate("""
     UPDATE $table

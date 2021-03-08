@@ -9,10 +9,10 @@ class TeacherAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: false,
-      leading: Icon(Icons.people),
+      leading: const Icon(Icons.people),
       title: Text(
         S.of(context).teacher,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 20,
           letterSpacing: 1.2,
@@ -21,10 +21,10 @@ class TeacherAppBar extends StatelessWidget {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => Settings(),
+              builder: (context) => const Settings(),
             ),
           ),
         )

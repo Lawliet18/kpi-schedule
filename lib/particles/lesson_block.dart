@@ -48,42 +48,42 @@ class BuildBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color _randomColor = chooseColor(data);
+    final Color _randomColor = chooseColor(data);
     return Material(
         type: MaterialType.card,
         elevation: 1,
         child: Container(
           color: color,
-          margin: EdgeInsets.only(top: 5.0),
+          margin: const EdgeInsets.only(top: 5.0),
           child: Row(
             children: [
               Container(
                 width: MediaQuery.of(context).size.width * 0.2,
-                padding: EdgeInsets.all(15),
+                padding: const EdgeInsets.all(15),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       data.lessonNumber,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Column(
                       children: [
                         Text(
                           data.timeStart.substring(0, 5),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           data.timeEnd.substring(0, 5),
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                   ],
                 ),
               ),
@@ -100,53 +100,48 @@ class BuildBlock extends StatelessWidget {
                           children: [
                             Text(
                               data.lessonName,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             Text(
-                              S.of(context).teacherBlock +
-                                  " " +
-                                  (data.teacherName.isEmpty
-                                      ? S.of(context).dontKnow
-                                      : data.teacherName),
-                              style: TextStyle(fontSize: 15),
+                              "${S.of(context).teacherBlock} ${data.teacherName.isEmpty ? S.of(context).dontKnow : data.teacherName}",
+                              style: const TextStyle(fontSize: 15),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 3,
                             ),
-                            Text(S.of(context).type +
-                                " " +
-                                data.lessonType.toString()),
-                            data.lessonRoom != ''
-                                ? Text(
-                                    S.of(context).room + " " + data.lessonRoom)
-                                : Container(),
+                            Text("${S.of(context).type} ${data.lessonType}"),
+                            if (data.lessonRoom != '')
+                              Text("${S.of(context).room} ${data.lessonRoom}")
+                            else
+                              Container(),
                           ],
                         )
                       : Center(
                           child: Text(
                           data.lessonName,
-                          style: TextStyle(fontSize: 30),
+                          style: const TextStyle(fontSize: 30),
                         )),
                 ),
               ),
-              withNotes
-                  ? Container(
-                      padding: const EdgeInsets.only(right: 5),
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: Center(
-                        child: Text(
-                          shortDayName(data),
-                          style: TextStyle(fontSize: 22),
-                        ),
-                      ),
-                    )
-                  : Container()
+              if (withNotes)
+                Container(
+                  padding: const EdgeInsets.only(right: 5),
+                  width: MediaQuery.of(context).size.width * 0.1,
+                  child: Center(
+                    child: Text(
+                      shortDayName(data),
+                      style: const TextStyle(fontSize: 22),
+                    ),
+                  ),
+                )
+              else
+                Container()
             ],
           ),
         ));

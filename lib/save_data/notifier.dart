@@ -7,10 +7,10 @@ class Notifier with ChangeNotifier {
   String _groupName = '';
   String get groupName => _groupName;
 
-  Week _currentWeek = Week.First;
+  Week _currentWeek = Week.first;
   Week get currentWeek => _currentWeek;
 
-  Week _week = Week.First;
+  Week _week = Week.first;
   Week get week => _week;
 
   String _textData = '';
@@ -20,7 +20,7 @@ class Notifier with ChangeNotifier {
   bool _editingType = true;
   bool get editingType => _editingType;
 
-  List<String> _list = [];
+  final _list = <String>[];
   UnmodifiableListView<String> get list => UnmodifiableListView(_list);
 
   void addGroupName(String name) {
@@ -38,6 +38,7 @@ class Notifier with ChangeNotifier {
     _groupName = '';
   }
 
+  // ignore: use_setters_to_change_properties
   void addCurrentWeek(Week value) {
     _week = value;
   }
@@ -75,6 +76,7 @@ class Notifier with ChangeNotifier {
     notifyListeners();
   }
 
+  // ignore: use_setters_to_change_properties
   void setWeek(Week value) {
     _currentWeek = value;
   }

@@ -10,21 +10,21 @@ class NotesAppBar extends StatelessWidget {
     return AppBar(
       title: Text(
         S.of(context).notes,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 20,
           letterSpacing: 1.2,
           wordSpacing: 1.2,
         ),
       ),
-      leading: Icon(
+      leading: const Icon(
         Icons.notes,
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => Settings(),
+              builder: (context) => const Settings(),
             ),
           ),
         )

@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule_kpi/save_data/notifier.dart';
 
-enum Week { First, Second }
+enum Week { first, second }
 
 extension MyMethods on Week {
   Week invert() {
     switch (this) {
-      case Week.First:
-        return Week.Second;
-      case Week.Second:
-        return Week.First;
+      case Week.first:
+        return Week.second;
+      case Week.second:
+        return Week.first;
     }
   }
 
   String toStr() {
     switch (this) {
-      case Week.First:
+      case Week.first:
         return '1';
-      case Week.Second:
+      case Week.second:
         return '2';
     }
   }
@@ -41,7 +41,7 @@ class _CurrentWeekState extends State<CurrentWeek> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle style = TextStyle(
+    const TextStyle style = TextStyle(
         color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold);
     return GestureDetector(
       onTap: () {
@@ -50,48 +50,44 @@ class _CurrentWeekState extends State<CurrentWeek> {
           current = current.invert();
         });
       },
-      child: Container(
-        child: Row(
-          //mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              width: 20,
-              height: 25,
-              decoration: BoxDecoration(
-                color: current == Week.First ? Colors.grey : Colors.white,
-                border: Border.all(color: Colors.transparent),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(5),
-                  bottomLeft: Radius.circular(5),
-                ),
-              ),
-              child: Text(
-                '1',
-                style: style,
-                textAlign: TextAlign.center,
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 20,
+            height: 25,
+            decoration: BoxDecoration(
+              color: current == Week.first ? Colors.grey : Colors.white,
+              border: Border.all(color: Colors.transparent),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(5),
+                bottomLeft: Radius.circular(5),
               ),
             ),
-            Container(
-                width: 20,
-                height: 25,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: current == Week.Second ? Colors.grey : Colors.white,
-                  border: Border.all(color: Colors.transparent),
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(5),
-                    bottomRight: Radius.circular(5),
-                  ),
+            child: const Text(
+              '1',
+              style: style,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Container(
+              width: 20,
+              height: 25,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: current == Week.second ? Colors.grey : Colors.white,
+                border: Border.all(color: Colors.transparent),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(5),
+                  bottomRight: Radius.circular(5),
                 ),
-                child: Text(
-                  '2',
-                  style: style,
-                  textAlign: TextAlign.center,
-                ))
-          ],
-        ),
+              ),
+              child: const Text(
+                '2',
+                style: style,
+                textAlign: TextAlign.center,
+              ))
+        ],
       ),
     );
   }

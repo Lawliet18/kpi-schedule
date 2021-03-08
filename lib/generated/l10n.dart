@@ -220,7 +220,7 @@ class S {
   /// `Don't know`
   String get dontKnow {
     return Intl.message(
-      'Don\'t know',
+      "Don't know",
       name: 'dontKnow',
       desc: '',
       args: [],
@@ -310,7 +310,7 @@ class S {
   /// `Can't load`
   String get loadError {
     return Intl.message(
-      'Can\'t load',
+      "Can't load",
       name: 'loadError',
       desc: '',
       args: [],

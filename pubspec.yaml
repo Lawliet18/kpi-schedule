@@ -29,19 +29,20 @@ dependencies:
   cupertino_icons: ^1.0.0
   flutter_keyboard_visibility: ^5.0.0-nullsafety.1
   flutter_svg: ^0.20.0-nullsafety.3
-  http: ^0.12.1
-  image_picker: ^0.6.7+22
+  http: ^0.13.0
+  image_picker: ^0.7.2
   intl: ^0.17.0-nullsafety.2
   path: ^1.8.0-nullsafety.3
-  percent_indicator: ^2.1.8
+  percent_indicator: ^3.3.0-nullsafety.1
   provider: ^5.0.0-nullsafety.2
   shared_preferences: ^2.0.0-nullsafety
   sqflite: ^2.0.0-nullsafety.3
-  url_launcher: ^ 5.7.10
+  url_launcher: ^6.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  lint: ^1.5.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

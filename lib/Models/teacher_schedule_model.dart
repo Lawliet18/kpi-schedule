@@ -26,43 +26,42 @@ class TeacherSchedules {
   });
 
   factory TeacherSchedules.fromJson(Map<String, dynamic> json) {
-    List<String> groups = [];
+    final List<String> groups = [];
     if (json['groups'] != null && json["groups"] is List<dynamic>) {
-      print(json['groups']);
       json['groups'].forEach((v) {
-        groups.add(v['group_full_name']);
+        groups.add(v['group_full_name'] as String);
       });
     }
     if (json["groups"] is String) {
-      groups.add(json["groups"]);
+      groups.add(json["groups"] as String);
     }
     return TeacherSchedules(
-      lessonId: json['lesson_id'],
-      dayName: json['day_name'],
-      lessonFullName: json['lesson_full_name'],
-      lessonNumber: json['lesson_number'],
-      lessonRoom: json['lesson_room'],
-      lessonType: json['lesson_type'],
-      lessonWeek: json['lesson_week'],
-      teacherId: json['teacher_id'],
-      timeStart: json['time_start'],
-      timeEnd: json['time_end'],
+      lessonId: json['lesson_id'] as String,
+      dayName: json['day_name'] as String,
+      lessonFullName: json['lesson_full_name'] as String,
+      lessonNumber: json['lesson_number'] as String,
+      lessonRoom: json['lesson_room'] as String,
+      lessonType: json['lesson_type'] as String,
+      lessonWeek: json['lesson_week'] as String,
+      teacherId: json['teacher_id'] as String,
+      timeStart: json['time_start'] as String,
+      timeEnd: json['time_end'] as String,
       groups: groups.join(' '),
     );
   }
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['lesson_id'] = this.lessonId;
-    data['day_name'] = this.dayName;
-    data['lesson_full_name'] = this.lessonFullName;
-    data['lesson_number'] = this.lessonNumber;
-    data['lesson_room'] = this.lessonRoom;
-    data['lesson_type'] = this.lessonType;
-    data['lesson_week'] = this.lessonWeek;
-    data['teacher_id'] = this.teacherId;
-    data['time_start'] = this.timeStart;
-    data['time_end'] = this.timeEnd;
-    data['groups'] = this.groups;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['lesson_id'] = lessonId;
+    data['day_name'] = dayName;
+    data['lesson_full_name'] = lessonFullName;
+    data['lesson_number'] = lessonNumber;
+    data['lesson_room'] = lessonRoom;
+    data['lesson_type'] = lessonType;
+    data['lesson_week'] = lessonWeek;
+    data['teacher_id'] = teacherId;
+    data['time_start'] = timeStart;
+    data['time_end'] = timeEnd;
+    data['groups'] = groups;
     return data;
   }
 }

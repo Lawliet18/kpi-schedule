@@ -9,7 +9,6 @@ class CustomImagePicker {
   static final CustomImagePicker imagePicker = CustomImagePicker._();
   final ImagePicker _picker = ImagePicker();
   PickedFile? imageFile;
-  String? _retrieveDataError;
 
   Future<PickedFile?> retrieveLostData() async {
     final LostData response = await _picker.getLostData();
@@ -18,10 +17,7 @@ class CustomImagePicker {
     }
     if (response.file != null) {
       imageFile = response.file;
-    } else {
-      _retrieveDataError = response.exception.code;
-      print(_retrieveDataError);
-    }
+    } else {}
 
     return imageFile;
   }
@@ -35,69 +31,65 @@ class CustomImagePicker {
       Provider.of<Notifier>(context, listen: false)
           .addImagePath(imageFile!.path);
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
-  onImageButtonPressed(BuildContext context) async {
+  Future<void> onImageButtonPressed(BuildContext context) async {
     await _displayPickImageDialog(context);
   }
 
-  _displayPickImageDialog(BuildContext context) {
+  Future<void> _displayPickImageDialog(BuildContext context) {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: Text(S.of(context).cameraParameters),
-            content: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  GestureDetector(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.camera,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text(S.of(context).camera,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                            ))
-                      ],
-                    ),
-                    onTap: () {
-                      selectMethod(ImageSource.camera, context)
-                          .then((value) => Navigator.pop(context));
-                    },
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    selectMethod(ImageSource.camera, context)
+                        .then((value) => Navigator.pop(context));
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.camera,
+                        size: 30,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(S.of(context).camera,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                          ))
+                    ],
                   ),
-                  SizedBox(height: 10),
-                  GestureDetector(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.image,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Text(S.of(context).gallery,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w500,
-                            ))
-                      ],
-                    ),
-                    onTap: () {
-                      selectMethod(ImageSource.gallery, context)
-                          .then((value) => Navigator.pop(context));
-                    },
-                  )
-                ],
-              ),
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () {
+                    selectMethod(ImageSource.gallery, context)
+                        .then((value) => Navigator.pop(context));
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.image,
+                        size: 30,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(S.of(context).gallery,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                          ))
+                    ],
+                  ),
+                )
+              ],
             ),
           );
         });

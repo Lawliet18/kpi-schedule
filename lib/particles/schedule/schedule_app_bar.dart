@@ -29,34 +29,34 @@ class ScheduleAppBar extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CurrentWeek(),
-          Spacer(),
-          Text(S.of(context).scheduleFor +
-              ' ' +
-              context.read<Notifier>().groupName),
-          Spacer()
+          const CurrentWeek(),
+          const Spacer(),
+          Text(
+              '${S.of(context).scheduleFor} ${context.read<Notifier>().groupName}'),
+          const Spacer()
         ],
       ),
       //centerTitle: true,
       actions: [
         IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => Settings()))),
+            icon: const Icon(Icons.menu),
+            onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const Settings()))),
       ],
       bottom: PreferredSize(
-        child: Container(
+        preferredSize: const Size.fromHeight(30),
+        child: SizedBox(
           height: 30,
           child: TabBar(
               controller: controller,
-              physics: ClampingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               isScrollable: true,
               unselectedLabelColor: Colors.grey[100],
               tabs: list
                   .map((e) => Tab(
                         child: Text(
                           e,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 1.2),
@@ -64,7 +64,6 @@ class ScheduleAppBar extends StatelessWidget {
                       ))
                   .toList()),
         ),
-        preferredSize: Size.fromHeight(30),
       ),
     );
   }
