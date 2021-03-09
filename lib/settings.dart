@@ -140,7 +140,7 @@ class _SettingsState extends State<Settings> {
   }
 
   void setLanguageButton(String? item) {
-    SharedPref.sharedPref.saveString('language', item!.toLowerCase());
+    SharedPref.saveString('language', item!.toLowerCase());
     setState(() {
       _value = item;
       S.load(Locale(item.toLowerCase(), ''));
@@ -215,9 +215,9 @@ class ChangeTheme extends StatelessWidget {
               themeMode.darkMode(darkMode: value);
               if (value) {
                 themeMode.setThemeMode(ThemeMode.dark);
-                SharedPref.sharedPref.saveBool('darkMode', value: value);
+                SharedPref.saveBool('darkMode', value: value);
               } else {
-                SharedPref.sharedPref.saveBool('darkMode', value: value);
+                SharedPref.saveBool('darkMode', value: value);
                 themeMode.setThemeMode(ThemeMode.light);
               }
             },
@@ -254,7 +254,7 @@ class ChangeGroup extends StatelessWidget {
                 DBLessons.db.delete();
                 DBTeacherSchedule.db.delete();
                 DBTeachers.db.delete();
-                SharedPref.sharedPref.remove('groups');
+                SharedPref.remove('groups');
                 context.read<Notifier>().removeGroupName();
                 Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const MyApp()));

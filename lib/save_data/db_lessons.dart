@@ -52,9 +52,9 @@ class DBLessons implements Table {
   Future<List<Lessons>> select() async {
     final db = await database;
     final res = await db!.query(table);
-    final list = res.isNotEmpty
+    final List<Lessons> list = res.isNotEmpty
         ? res.map<Lessons>((json) => Lessons.fromJson(json)).toList()
-        : [] as List<Lessons>;
+        : [];
     return list;
   }
 

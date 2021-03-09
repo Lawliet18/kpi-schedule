@@ -7,14 +7,16 @@ Future<List<Groups>> fetchGroups() async {
   final list = <Groups>[];
   try {
     for (var i = 100; i <= 2400; i += 100) {
-      final response = await http.get(
-          'https://api.rozklad.org.ua/v2/groups/?filter={%27limit%27:100,%27offset%27:$i}');
+      final parameters = {"filter": "{limit:100,offset:$i}"};
+      final response = await http
+          .get(Uri.https('api.rozklad.org.ua', 'v2/groups', parameters));
       if (response.statusCode == 200) {
         final data = response.body;
         final parsed = jsonDecode(data);
-        list.addAll(parsed['data']
-            .map((Map<String, dynamic> json) => Groups.fromJson(json))
-            .toList() as Iterable<Groups>);
+        final parsedData = parsed['data'] as List;
+        list.addAll(parsedData
+            .map((json) => Groups.fromJson(json as Map<String, dynamic>))
+            .toList());
       }
     }
   } catch (e) {

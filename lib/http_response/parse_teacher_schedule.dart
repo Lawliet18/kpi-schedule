@@ -11,13 +11,15 @@ Future<Map<String, List<TeacherSchedules>>?> fetchTeacherSchedule(
     for (var i = 0; i < names.length; i++) {
       forHttp.add(names[i]);
       names[i].split(' ').join('+');
-      final responce = await http
-          .get('https://api.rozklad.org.ua/v2/teachers/${names[i]}/lessons');
+      final responce = await http.get(
+          Uri.https('api.rozklad.org.ua', 'v2/teachers/${names[i]}/lessons'));
       if (responce.statusCode == 200) {
         final parsed = jsonDecode(responce.body);
-        teachersMap[forHttp[i]] = parsed['data']
-            .map((Map<String, dynamic> json) => TeacherSchedules.fromJson(json))
-            .toList() as List<TeacherSchedules>;
+        final parsedData = parsed['data'] as List;
+        teachersMap[forHttp[i]] = parsedData
+            .map((json) =>
+                TeacherSchedules.fromJson(json as Map<String, dynamic>))
+            .toList();
       }
     }
     return teachersMap;

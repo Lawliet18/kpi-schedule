@@ -52,9 +52,9 @@ class DBTeacherSchedule with Table {
   Future<List<TeacherSchedules>> select() async {
     final db = await database;
     final res = await db!.query(table);
-    final list = res.isNotEmpty
+    final List<TeacherSchedules> list = res.isNotEmpty
         ? res.map((json) => TeacherSchedules.fromJson(json)).toList()
-        : [] as List<TeacherSchedules>;
+        : [];
     return list;
   }
 

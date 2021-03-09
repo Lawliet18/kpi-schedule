@@ -18,6 +18,7 @@ import 'package:schedule_kpi/schedule.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SharedPref.init();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<LanguageNotifier>(create: (_) => LanguageNotifier()),
     ChangeNotifierProvider<Notifier>(create: (_) => Notifier()),
@@ -72,35 +73,31 @@ class _MyAppState extends State<MyApp> {
   }
 
   void loadSharedPref() {
-    SharedPref.sharedPref.loadBool('darkMode').then(
-          (value) => setState(() {
-            value
-                ? Provider.of<ThemeNotifier>(context, listen: false)
-                    .setThemeMode(ThemeMode.dark)
-                : Provider.of<ThemeNotifier>(context, listen: false)
-                    .setThemeMode(ThemeMode.light);
-            Provider.of<ThemeNotifier>(context, listen: false)
-                .darkMode(darkMode: value);
-          }),
-        );
-    SharedPref.sharedPref.loadString('groups').then(
-          (value) => setState(() {
-            groupName = value;
-            Provider.of<Notifier>(context, listen: false).addGroupName(value);
-          }),
-        );
-    SharedPref.sharedPref
-        .loadListString('list_groups')
-        .then((value) => setState(() {
-              loadedList.addAll(value);
-            }));
-    SharedPref.sharedPref
-        .loadString('current_week')
-        .then((value) => setState(() {
-              Provider.of<Notifier>(context, listen: false)
-                  .addCurrentWeek(parseWeek(value == '' ? '1' : value));
-            }));
-    SharedPref.sharedPref.loadString('language').then((value) => setState(() {
+    SharedPref.loadBool('darkMode').then(
+      (value) => setState(() {
+        value
+            ? Provider.of<ThemeNotifier>(context, listen: false)
+                .setThemeMode(ThemeMode.dark)
+            : Provider.of<ThemeNotifier>(context, listen: false)
+                .setThemeMode(ThemeMode.light);
+        Provider.of<ThemeNotifier>(context, listen: false)
+            .darkMode(darkMode: value);
+      }),
+    );
+    SharedPref.loadString('groups').then(
+      (value) => setState(() {
+        groupName = value;
+        Provider.of<Notifier>(context, listen: false).addGroupName(value);
+      }),
+    );
+    SharedPref.loadListString('list_groups').then((value) => setState(() {
+          loadedList.addAll(value);
+        }));
+    SharedPref.loadString('current_week').then((value) => setState(() {
+          Provider.of<Notifier>(context, listen: false)
+              .addCurrentWeek(parseWeek(value == '' ? '1' : value));
+        }));
+    SharedPref.loadString('language').then((value) => setState(() {
           if (value.isEmpty) {
             locale = Locale(Intl.systemLocale, '');
           } else {
@@ -125,19 +122,19 @@ class LoadingFromInternet extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data[1] as List<Groups>;
-            final dataWeek = snapshot.data[0].toString();
+            final dataWeek = snapshot.data[0] as int;
             if (!isAdded) {
               for (final value in data) {
                 list.add(value.groupFullName);
               }
-
+              //print(list);
               isAdded = true;
-              SharedPref.sharedPref.saveListString('list_groups', list);
+              SharedPref.saveListString('list_groups', list);
             }
-            SharedPref.sharedPref.saveString('current_week', dataWeek);
+            SharedPref.saveString('current_week', dataWeek.toString());
             Provider.of<Notifier>(context, listen: false)
-                .addCurrentWeek(parseWeek(dataWeek));
-            context.read<Notifier>().setWeek(parseWeek(dataWeek));
+                .addCurrentWeek(parseWeek(dataWeek.toString()));
+            context.read<Notifier>().setWeek(parseWeek(dataWeek.toString()));
             return HomeScreen(
               groups: list,
             );

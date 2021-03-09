@@ -58,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       itemSubmitted: (item) {
         setState(() => searchTextField.textField.controller?.text = item);
       },
+      textSubmitted: (item) {},
       key: _key,
       suggestions: widget.groups,
     );
@@ -141,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: MaterialStateProperty.all<Color>(Colors.teal)),
       onPressed: () {
         final controllerText = searchTextField.textField.controller?.text ?? "";
-        SharedPref.sharedPref.saveString('groups', controllerText);
+        SharedPref.saveString('groups', controllerText);
         Provider.of<Notifier>(context, listen: false)
             .addGroupName(controllerText);
         Navigator.of(context)

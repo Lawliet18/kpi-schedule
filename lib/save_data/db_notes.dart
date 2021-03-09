@@ -56,9 +56,8 @@ class DBNotes implements Table {
   Future<List<Lessons>> select() async {
     final db = await database;
     final res = await db!.query(table);
-    final list = res.isNotEmpty
-        ? res.map((c) => Lessons.fromJson(c)).toList()
-        : [] as List<Lessons>;
+    final List<Lessons> list =
+        res.isNotEmpty ? res.map((c) => Lessons.fromJson(c)).toList() : [];
     return list;
   }
 
