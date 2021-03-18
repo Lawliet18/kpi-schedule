@@ -1,19 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.schedule_kpi">
-    <!-- io.flutter.app.FlutterApplication is an android.app.Application that
-         calls FlutterMain.startInitialization(this); in its onCreate method.
-         In most cases you can leave this as-is, but you if you want to provide
-         additional functionality it is fine to subclass or reimplement
-         FlutterApplication and put your custom class here. 
-         <uses-permission android:name="android.permission.INTERNET" />
-         -->
-         <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
-         <uses-permission android:name="android.permission.INTERNET" />
-        
+    <!-- Required to fetch data from the internet. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="schedule_kpi"
-        android:icon="@mipmap/ic_launcher">
+        android:label="KPI Schedule"
+        android:icon="@mipmap/launcher_icon">
         
         <activity
             android:name=".MainActivity"

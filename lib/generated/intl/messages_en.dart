@@ -75,6 +75,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "schedule": MessageLookupByLibrary.simpleMessage("Schedule"),
         "scheduleFor": MessageLookupByLibrary.simpleMessage("Schedule for"),
         "scheduleInternetError": MessageLookupByLibrary.simpleMessage(
+            // ignore: lines_longer_than_80_chars
             "Cannot load your schedule.\nPlease check your internet connection."),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "teacher": MessageLookupByLibrary.simpleMessage("Teachers"),

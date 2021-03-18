@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/Models/lessons.dart';
 
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/particles/lesson_block.dart';
-import 'package:schedule_kpi/save_data/db_lessons.dart';
-
-import 'package:schedule_kpi/save_data/db_notes.dart';
-import 'package:schedule_kpi/save_data/language_notifier.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
+import '../../Models/lessons.dart';
+import '../../generated/l10n.dart';
+import '../../save_data/db_lessons.dart';
+import '../../save_data/db_notes.dart';
+import '../../save_data/language_notifier.dart';
+import '../../save_data/notifier.dart';
+import '../lesson_block.dart';
 
 class NotesBody extends StatefulWidget {
   const NotesBody({Key? key}) : super(key: key);
@@ -28,7 +27,7 @@ class _NotesBodyState extends State<NotesBody> {
       body: Consumer<Notifier>(
         builder: (context, value, child) => FutureBuilder(
           future: DBNotes.db.select(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
+          builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -164,7 +163,7 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
       physics: const NeverScrollableScrollPhysics(),
       key: widget.animatedListKey,
       initialItemCount: widget.notesList.length,
-      itemBuilder: (BuildContext context, int index, animation) {
+      itemBuilder: (context, index, animation) {
         if (widget.notesList[index].dateNotes == widget.item) {
           return FadeTransition(
               opacity: animation,
@@ -199,7 +198,7 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
       onPressed: () {
         try {
           widget.animatedListKey.currentState!.insertItem(_index!);
-        } catch (_) {
+        } on Exception catch (_) {
           rethrow;
         }
         Navigator.pop(context);
@@ -234,7 +233,7 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
     // show the dialog
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return alert;
       },
     );

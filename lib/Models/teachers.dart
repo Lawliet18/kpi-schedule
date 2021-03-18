@@ -16,17 +16,17 @@ class Teachers {
 
   factory Teachers.fromJson(Map<String, dynamic> json) {
     return Teachers(
-      teacherId: json['teacher_id'] as String,
-      teacherName: json['teacher_name'] as String,
-      teacherFullName: json['teacher_full_name'] as String,
-      teacherShortName: json['teacher_short_name'] as String,
-      teacherUrl: json['teacher_url'] as String,
-      teacherRating: json['teacher_rating'] as String,
+      teacherId: json['teacher_id'],
+      teacherName: json['teacher_name'],
+      teacherFullName: json['teacher_full_name'],
+      teacherShortName: json['teacher_short_name'],
+      teacherUrl: json['teacher_url'],
+      teacherRating: json['teacher_rating'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final data = <String, dynamic>{};
     data['teacher_id'] = teacherId;
     data['teacher_name'] = teacherName;
     data['teacher_full_name'] = teacherFullName;

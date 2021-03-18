@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/settings.dart';
+import '../../generated/l10n.dart';
+import '../../settings.dart';
 
 class TeacherAppBar extends StatelessWidget {
   const TeacherAppBar({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
+import '../save_data/notifier.dart';
 
 enum Week { first, second }
 
@@ -41,7 +41,7 @@ class _CurrentWeekState extends State<CurrentWeek> {
 
   @override
   Widget build(BuildContext context) {
-    const TextStyle style = TextStyle(
+    const style = TextStyle(
         color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold);
     return GestureDetector(
       onTap: () {

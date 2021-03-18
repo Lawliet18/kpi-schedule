@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/particles/current_week.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
 
+import '../../generated/l10n.dart';
+import '../../save_data/notifier.dart';
 import '../../settings.dart';
+import '../current_week.dart';
 
 class ScheduleAppBar extends StatelessWidget {
   const ScheduleAppBar({
@@ -32,7 +32,7 @@ class ScheduleAppBar extends StatelessWidget {
           const CurrentWeek(),
           const Spacer(),
           Text(
-              '${S.of(context).scheduleFor} ${context.read<Notifier>().groupName}'),
+              '${S.of(context).scheduleFor} ${context.read<Notifier>().groupName.toUpperCase()}'),
           const Spacer()
         ],
       ),

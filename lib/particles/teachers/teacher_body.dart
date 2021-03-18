@@ -5,26 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 
-import 'package:schedule_kpi/Models/teacher_schedule_model.dart';
-import 'package:schedule_kpi/Models/teachers.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/http_response/http_parse_teachers.dart';
-import 'package:schedule_kpi/http_response/parse_teacher_schedule.dart';
-import 'package:schedule_kpi/particles/teachers/teacher_schedule.dart';
-import 'package:schedule_kpi/save_data/db_teacher_schedule.dart';
-import 'package:schedule_kpi/save_data/db_teachers.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
+import '../../Models/teacher_schedule_model.dart';
+import '../../Models/teachers.dart';
+import '../../generated/l10n.dart';
+import '../../http_response/http_parse_teachers.dart';
+import '../../http_response/parse_teacher_schedule.dart';
+import '../../save_data/db_teacher_schedule.dart';
+import '../../save_data/db_teachers.dart';
+import '../../save_data/notifier.dart';
+import 'teacher_schedule.dart';
 
 class TeacherBody extends StatelessWidget {
   const TeacherBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, List<TeacherSchedules>> teacherMap = {};
+    final teacherMap = <String, List<TeacherSchedules>>{};
     return FutureBuilder<List<List>>(
       future:
           Future.wait([DBTeachers.db.select(), DBTeacherSchedule.db.select()]),
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+      builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
@@ -63,13 +63,14 @@ class LoadingFromInternet extends StatelessWidget {
     final groupId = Provider.of<Notifier>(context, listen: false).groupName;
     return FutureBuilder(
       future: fetchTeachers(groupId),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        final dataFromInternet = snapshot.data as List<Teachers>;
+      builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
+        final List<Teachers> dataFromInternet =
+            snapshot.data! as List<Teachers>;
         if (snapshot.connectionState == ConnectionState.none) {
           return Center(
             child: Text(S.of(context).loadError),
@@ -128,7 +129,7 @@ class _BuildListState extends State<BuildList> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: fetchTeacherSchedule(names),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+      builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),

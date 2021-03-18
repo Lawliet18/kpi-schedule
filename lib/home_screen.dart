@@ -1,12 +1,11 @@
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
 
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
-import 'package:schedule_kpi/save_data/shared_prefs.dart';
-import 'package:schedule_kpi/schedule.dart';
+import 'generated/l10n.dart';
+import 'save_data/notifier.dart';
+import 'save_data/shared_prefs.dart';
+import 'schedule.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<String> groups;
@@ -16,54 +15,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<AutoCompleteTextFieldState<String>> _key = GlobalKey();
-  late AutoCompleteTextField<String> searchTextField;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late String autocompleteText;
   bool ifOpen = false;
 
   @override
   void initState() {
     super.initState();
-    searchTextField = AutoCompleteTextField<String>(
-      onFocusChanged: (hasFocus) {},
-      textInputAction: TextInputAction.go,
-      clearOnSubmit: false,
-      style: const TextStyle(fontSize: 18),
-      decoration: InputDecoration(
-          filled: true,
-          hintText: 'ТВ-71',
-          labelText: 'Group',
-          hintStyle: const TextStyle(fontSize: 18),
-          contentPadding: const EdgeInsets.all(10),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Colors.transparent),
-          ),
-          focusedBorder:
-              const UnderlineInputBorder(borderSide: BorderSide.none)),
-      itemBuilder: (context, item) {
-        return Container(
-          padding: const EdgeInsets.all(5.0),
-          child: Text(
-            item,
-            style: const TextStyle(fontSize: 14),
-          ),
-        );
-      },
-      itemFilter: (item, query) {
-        return item.toLowerCase().startsWith(query.toLowerCase());
-      },
-      itemSorter: (a, b) {
-        return a.compareTo(b);
-      },
-      itemSubmitted: (item) {
-        setState(() => searchTextField.textField.controller?.text = item);
-      },
-      textSubmitted: (item) {},
-      key: _key,
-      suggestions: widget.groups,
-    );
+
     final keyboardVisibilityController = KeyboardVisibilityController();
-    keyboardVisibilityController.onChange.listen((bool visible) {
+    keyboardVisibilityController.onChange.listen((visible) {
       ifOpen = visible;
     });
   }
@@ -121,16 +82,83 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Padding buildField(BuildContext context) {
-    return Padding(
-        padding: MediaQuery.of(context).viewPadding,
-        child: Column(children: <Widget>[
-          Column(
-            children: [
-              searchTextField,
-            ],
-          )
-        ]));
+  Form buildField(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Padding(
+          padding: MediaQuery.of(context).viewPadding,
+          child: RawAutocomplete(
+            optionsBuilder: (textEditingValue) {
+              return widget.groups.where((option) =>
+                  option.contains(textEditingValue.text.toLowerCase()));
+            },
+            onSelected: (String selection) {
+              ifOpen = false;
+              setState(() {
+                autocompleteText = selection;
+              });
+            },
+            fieldViewBuilder:
+                (context, textEditingController, focusNode, onFieldSubmitted) {
+              return TextFormField(
+                controller: textEditingController,
+                focusNode: focusNode,
+                onFieldSubmitted: (value) {
+                  setState(() {
+                    autocompleteText = value;
+                  });
+                  onFieldSubmitted();
+                },
+                validator: (value) {
+                  if (!widget.groups.contains(value) && value == null) {
+                    return 'Nothing Selected';
+                  }
+                  return null;
+                },
+                textInputAction: TextInputAction.go,
+                style: const TextStyle(fontSize: 18),
+                decoration: InputDecoration(
+                    filled: true,
+                    hintText: 'ТВ-71',
+                    labelText: 'Group',
+                    hintStyle: const TextStyle(fontSize: 18),
+                    contentPadding: const EdgeInsets.all(10),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide.none)),
+              );
+            },
+            optionsViewBuilder: (context,
+                AutocompleteOnSelected<String> onSelected,
+                Iterable<String> options) {
+              return Align(
+                alignment: Alignment.topLeft,
+                child: Material(
+                  elevation: 4.0,
+                  child: SizedBox(
+                    height: 200.0,
+                    child: ListView(
+                      padding: const EdgeInsets.all(8.0),
+                      children: options
+                          .map<Widget>((String option) => GestureDetector(
+                                onTap: () {
+                                  onSelected(option);
+                                },
+                                child: ListTile(
+                                  title: Text(option),
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ),
+              );
+            },
+          )),
+    );
   }
 
   ElevatedButton buildConfirmButton(BuildContext context) {
@@ -141,10 +169,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           backgroundColor: MaterialStateProperty.all<Color>(Colors.teal)),
       onPressed: () {
-        final controllerText = searchTextField.textField.controller?.text ?? "";
-        SharedPref.saveString('groups', controllerText);
+        FocusScope.of(context).requestFocus(FocusNode());
+        if (!_formKey.currentState!.validate()) {
+          return;
+        }
+        SharedPref.saveString('groups', autocompleteText);
         Provider.of<Notifier>(context, listen: false)
-            .addGroupName(controllerText);
+            .addGroupName(autocompleteText);
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => const Schedule()));
       },

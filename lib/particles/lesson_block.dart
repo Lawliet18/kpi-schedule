@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:schedule_kpi/Models/lessons.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/particles/your_notes.dart';
+import '../Models/lessons.dart';
+import '../generated/l10n.dart';
+import 'your_notes.dart';
 
 class LessonBlock extends StatelessWidget {
   const LessonBlock(
@@ -48,7 +48,7 @@ class BuildBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color _randomColor = chooseColor(data);
+    final _randomColor = chooseColor(data);
     return Material(
         type: MaterialType.card,
         elevation: 1,
@@ -161,7 +161,7 @@ Color chooseColor(Lessons data) {
 }
 
 String shortDayName(Lessons data) {
-  String dayName = '';
+  var dayName = '';
   switch (data.dayName) {
     case 'Понеділок':
       dayName = 'Пн';

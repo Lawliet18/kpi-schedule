@@ -1,15 +1,11 @@
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/Models/teacher_schedule_model.dart';
 
-import 'package:schedule_kpi/generated/l10n.dart';
-
-import 'package:schedule_kpi/particles/current_week.dart';
-
-import 'package:schedule_kpi/save_data/notifier.dart';
+import '../../Models/teacher_schedule_model.dart';
+import '../../generated/l10n.dart';
+import '../../save_data/notifier.dart';
+import '../current_week.dart';
 
 class TeacherScheduleWidget extends StatefulWidget {
   final List<TeacherSchedules> list;
@@ -28,7 +24,7 @@ class TeacherScheduleWidget extends StatefulWidget {
 class _TeacherScheduleWidgetState extends State<TeacherScheduleWidget> {
   @override
   Widget build(BuildContext context) {
-    final List<String> listUA = [
+    final listUA = <String>[
       'Понеділок',
       'Вівторок',
       'Середа',
@@ -79,7 +75,7 @@ class BuildList extends StatelessWidget {
     return Consumer<Notifier>(
       builder: (context, value, child) {
         final week = value.week;
-        final List l = [];
+        final l = [];
         for (final item in list) {
           l.addAll(item
               .where((element) => element.lessonWeek == week.toStr())
@@ -102,7 +98,7 @@ class BuildList extends StatelessWidget {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: listOfLessonWeek.length,
-                            itemBuilder: (BuildContext context, int index) {
+                            itemBuilder: (context, index) {
                               return TeacherParticles(
                                   data: listOfLessonWeek,
                                   index: index,

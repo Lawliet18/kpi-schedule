@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:schedule_kpi/particles/schedule/schedule_app_bar.dart';
-import 'package:schedule_kpi/particles/schedule/schedule_body.dart';
-import 'package:schedule_kpi/particles/teachers/teacher_app_bar.dart';
-import 'package:schedule_kpi/particles/teachers/teacher_body.dart';
-
 import 'generated/l10n.dart';
 import 'particles/notes/notes_appbar.dart';
 import 'particles/notes/notes_body.dart';
+import 'particles/schedule/schedule_app_bar.dart';
+import 'particles/schedule/schedule_body.dart';
+import 'particles/teachers/teacher_app_bar.dart';
+import 'particles/teachers/teacher_body.dart';
 
 class Schedule extends StatefulWidget {
   const Schedule({Key? key, this.onSavedNotes = 0}) : super(key: key);

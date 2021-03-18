@@ -3,18 +3,18 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:schedule_kpi/Models/groups.dart';
-import 'package:schedule_kpi/Models/theme_data.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/home_screen.dart';
-import 'package:schedule_kpi/http_response/parse_current_week.dart';
-import 'package:schedule_kpi/http_response/parse_groups.dart';
-import 'package:schedule_kpi/particles/current_week.dart';
-import 'package:schedule_kpi/save_data/language_notifier.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
-import 'package:schedule_kpi/save_data/shared_prefs.dart';
-import 'package:schedule_kpi/save_data/theme_notifier.dart';
-import 'package:schedule_kpi/schedule.dart';
+import 'Models/groups.dart';
+import 'Models/theme_data.dart';
+import 'generated/l10n.dart';
+import 'home_screen.dart';
+import 'http_response/parse_current_week.dart';
+import 'http_response/parse_groups.dart';
+import 'particles/current_week.dart';
+import 'save_data/language_notifier.dart';
+import 'save_data/notifier.dart';
+import 'save_data/shared_prefs.dart';
+import 'save_data/theme_notifier.dart';
+import 'schedule.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -115,11 +115,12 @@ class LoadingFromInternet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final list = <String>[];
-    bool isAdded = false;
+    var isAdded = false;
     return Scaffold(
       body: FutureBuilder(
         future: Future.wait([fetchCurrentWeek(), fetchGroups()]),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        // ignore: avoid_types_on_closure_parameters
+        builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data[1] as List<Groups>;
             final dataWeek = snapshot.data[0] as int;

@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:schedule_kpi/Models/lessons.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/particles/notes/adding_notes.dart';
-import 'package:schedule_kpi/particles/notes/detail_image.dart';
-import 'package:schedule_kpi/settings.dart';
+
+import '../Models/lessons.dart';
+import '../generated/l10n.dart';
+import '../settings.dart';
+import 'notes/adding_notes.dart';
+import 'notes/detail_image.dart';
 
 class YourNotes extends StatelessWidget {
   const YourNotes({Key? key, required this.data}) : super(key: key);
@@ -13,7 +14,7 @@ class YourNotes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> list = [];
+    var list = <String>[];
     if (data.imagePath != null && data.imagePath! != '') {
       list = data.imagePath!.split(' ');
     }
@@ -57,7 +58,7 @@ class YourNotes extends StatelessWidget {
                                     child: Hero(
                                         tag: list[index] + index.toString(),
                                         child: Image.file(file)));
-                              } catch (e) {
+                              } on Exception catch (_) {
                                 return Container();
                               }
                             }),
@@ -89,7 +90,7 @@ class YourNotes extends StatelessWidget {
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
+                        (states) {
                           if (states.contains(MaterialState.pressed)) {
                             return Theme.of(context)
                                 .colorScheme

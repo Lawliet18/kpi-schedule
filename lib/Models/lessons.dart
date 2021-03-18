@@ -41,14 +41,14 @@ class Lessons {
       lessonWeek: json['lesson_week'] as String,
       timeStart: json['time_start'] as String,
       timeEnd: json['time_end'] as String,
-      dateNotes: json['notes_date'] as String,
-      description: json['description'] as String,
-      imagePath: json['image_path'] as String,
+      dateNotes: json['notes_date'],
+      description: json['description'],
+      imagePath: json['image_path'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final data = <String, dynamic>{};
     data['lesson_id'] = lessonId;
     data['day_name'] = dayName;
     data['lesson_name'] = lessonName;

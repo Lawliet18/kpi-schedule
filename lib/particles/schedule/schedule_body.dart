@@ -2,17 +2,16 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/Models/lessons.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/http_response/parse_lessons.dart';
-import 'package:schedule_kpi/particles/current_week.dart';
-import 'package:schedule_kpi/particles/lesson_block.dart';
-import 'package:schedule_kpi/particles/notes/adding_notes.dart';
-import 'package:schedule_kpi/save_data/db_lessons.dart';
-import 'package:schedule_kpi/save_data/db_notes.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
+import '../../Models/lessons.dart';
+import '../../generated/l10n.dart';
+import '../../http_response/parse_lessons.dart';
+import '../../save_data/db_lessons.dart';
+import '../../save_data/db_notes.dart';
+import '../../save_data/notifier.dart';
+import '../current_week.dart';
+import '../lesson_block.dart';
+import '../notes/adding_notes.dart';
 
 class ScheduleBody extends StatefulWidget {
   const ScheduleBody({
@@ -30,12 +29,10 @@ class _ScheduleBodyState extends State<ScheduleBody> {
   Widget build(BuildContext context) {
     return FutureBuilder<List<List<Lessons>>>(
         future: Future.wait([DBLessons.db.select(), DBNotes.db.select()]),
-        builder: (context, AsyncSnapshot snapshotFromDataBase) {
+        builder: (context, snapshotFromDataBase) {
           if (snapshotFromDataBase.hasData) {
-            final List<Lessons> dataFromDataBase =
-                snapshotFromDataBase.data![0] as List<Lessons>;
-            final List<Lessons> notes =
-                snapshotFromDataBase.data![1] as List<Lessons>;
+            final dataFromDataBase = snapshotFromDataBase.data![0];
+            final notes = snapshotFromDataBase.data![1];
 
             if (dataFromDataBase.isEmpty) {
               return LoadFromInternet(controller: widget.controller);
@@ -64,13 +61,12 @@ class LoadFromInternet extends StatefulWidget {
 }
 
 class _LoadFromInternetState extends State<LoadFromInternet> {
-  final SvgPicture imgOnErrorLoad =
-      SvgPicture.asset('assets/img/sad_smile.svg');
+  final AssetImage imgOnErrorLoad = AssetImage('assets/img/sad.png');
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: fetchLessons(context.read<Notifier>().groupName),
-      builder: (BuildContext context, AsyncSnapshot sp) {
+      builder: (context, sp) {
         //if you dont have internet connection
         if (sp.connectionState == ConnectionState.none) {
           return buildOnWrongFuture(
@@ -101,7 +97,7 @@ class _LoadFromInternetState extends State<LoadFromInternet> {
   }
 
   Center buildOnWrongFuture(
-      BuildContext context, String description, SvgPicture imgOnErrorLoad,
+      BuildContext context, String description, AssetImage imgOnErrorLoad,
       {required bool isInternetFailed}) {
     return Center(
       child: Column(
@@ -112,7 +108,10 @@ class _LoadFromInternetState extends State<LoadFromInternet> {
             width: 200,
             height: 200,
             padding: const EdgeInsets.all(0.0),
-            child: imgOnErrorLoad,
+            child: Image(
+              image: imgOnErrorLoad,
+              color: Colors.white54,
+            ),
           ),
           const SizedBox(height: 10),
           Center(
@@ -189,7 +188,7 @@ class BuildLessons extends StatelessWidget {
               }
               return ListView.builder(
                 itemCount: data.length,
-                itemBuilder: (BuildContext context, int index) {
+                itemBuilder: (context, index) {
                   if (data[index].dateNotes != null &&
                       notes.any((element) =>
                           element.lessonId == data[index].lessonId)) {

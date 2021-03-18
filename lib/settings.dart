@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/main.dart';
-import 'package:schedule_kpi/save_data/db_lessons.dart';
-import 'package:schedule_kpi/save_data/db_notes.dart';
-import 'package:schedule_kpi/save_data/db_teacher_schedule.dart';
-import 'package:schedule_kpi/save_data/db_teachers.dart';
-import 'package:schedule_kpi/save_data/language_notifier.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
-import 'package:schedule_kpi/save_data/shared_prefs.dart';
-import 'package:schedule_kpi/save_data/theme_notifier.dart';
-import 'package:schedule_kpi/schedule.dart';
 
 import 'generated/l10n.dart';
+import 'main.dart';
 import 'particles/current_week.dart';
+import 'save_data/db_lessons.dart';
+import 'save_data/db_notes.dart';
+import 'save_data/db_teacher_schedule.dart';
+import 'save_data/db_teachers.dart';
+import 'save_data/language_notifier.dart';
+import 'save_data/notifier.dart';
+import 'save_data/shared_prefs.dart';
+import 'save_data/theme_notifier.dart';
+import 'schedule.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -109,7 +109,7 @@ class _SettingsState extends State<Settings> {
                   child: DropdownButton<String>(
                     value: _value,
                     items: language
-                        .map((String item) => DropdownMenuItem<String>(
+                        .map((item) => DropdownMenuItem<String>(
                               value: item,
                               child: Text(item),
                             ))

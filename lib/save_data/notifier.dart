@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
-import 'package:schedule_kpi/particles/current_week.dart';
+import '../particles/current_week.dart';
 
 class Notifier with ChangeNotifier {
   String _groupName = '';

@@ -1,14 +1,12 @@
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
 // This is a library that looks up messages for specific locales by
 // delegating to the appropriate library.
-//@dart=2.11
 // Ignore issues from commonly used lints in this file.
 // ignore_for_file:implementation_imports, file_names, unnecessary_new
 // ignore_for_file:unnecessary_brace_in_string_interps, directives_ordering
 // ignore_for_file:argument_type_not_assignable, invalid_assignment
 // ignore_for_file:prefer_single_quotes, prefer_generic_function_type_aliases
 // ignore_for_file:comment_references
-
 import 'dart:async';
 
 import 'package:intl/intl.dart';
@@ -26,7 +24,7 @@ Map<String, LibraryLoader> _deferredLibraries = {
   'uk': () => new Future.value(),
 };
 
-MessageLookupByLibrary _findExact(String localeName) {
+MessageLookupByLibrary? _findExact(String localeName) {
   switch (localeName) {
     case 'en':
       return messages_en.messages;
@@ -57,12 +55,12 @@ Future<bool> initializeMessages(String localeName) async {
 bool _messagesExistFor(String locale) {
   try {
     return _findExact(locale) != null;
-  } catch (e) {
+  } on Exception catch (_) {
     return false;
   }
 }
 
-MessageLookupByLibrary _findGeneratedMessagesFor(String locale) {
+MessageLookupByLibrary? _findGeneratedMessagesFor(String locale) {
   final actualLocale =
       Intl.verifiedLocale(locale, _messagesExistFor, onFailure: (_) => null);
   if (actualLocale == null) return null;

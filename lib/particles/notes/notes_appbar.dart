@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/settings.dart';
+import '../../generated/l10n.dart';
+import '../../settings.dart';
 
 class NotesAppBar extends StatelessWidget {
   const NotesAppBar({Key? key}) : super(key: key);

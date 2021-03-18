@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
+import '../../generated/l10n.dart';
+import '../../save_data/notifier.dart';
 
 class CustomImagePicker {
   CustomImagePicker._();
@@ -11,7 +11,7 @@ class CustomImagePicker {
   PickedFile? imageFile;
 
   Future<PickedFile?> retrieveLostData() async {
-    final LostData response = await _picker.getLostData();
+    final response = await _picker.getLostData();
     if (response.isEmpty) {
       return null;
     }
@@ -30,7 +30,7 @@ class CustomImagePicker {
       imageFile = pickedFile;
       Provider.of<Notifier>(context, listen: false)
           .addImagePath(imageFile!.path);
-    } catch (e) {
+    } on Exception catch (_) {
       rethrow;
     }
   }

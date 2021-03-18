@@ -1,18 +1,18 @@
 import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:schedule_kpi/Models/lessons.dart';
-import 'package:schedule_kpi/generated/l10n.dart';
-import 'package:schedule_kpi/particles/lesson_block.dart';
-import 'package:schedule_kpi/particles/notes/notes_body.dart';
-import 'package:schedule_kpi/save_data/db_lessons.dart';
-import 'package:schedule_kpi/save_data/db_notes.dart';
-import 'package:schedule_kpi/save_data/notifier.dart';
-import 'package:schedule_kpi/schedule.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:schedule_kpi/settings.dart';
 
+import '../../Models/lessons.dart';
+import '../../generated/l10n.dart';
+import '../../save_data/db_lessons.dart';
+import '../../save_data/db_notes.dart';
+import '../../save_data/notifier.dart';
+import '../../schedule.dart';
+import '../../settings.dart';
+import '../lesson_block.dart';
 import 'detail_image.dart';
 import 'image_picker.dart';
 
@@ -139,7 +139,7 @@ class _BuildListOfDataState extends State<BuildListOfData> {
           provider.addImagePath(widget.data.imagePath!);
         });
       }
-    } catch (e) {
+    } on Exception catch (_) {
       rethrow;
     }
   }
@@ -177,7 +177,7 @@ class _BuildListOfDataState extends State<BuildListOfData> {
               )
             else
               Builder(builder: (context) {
-                final List<String> list = _controller.text.split(' ');
+                final list = _controller.text.split(' ');
                 return GestureDetector(
                     onTap: () => value.changeEditingType(),
                     child: BuildDescription(list: list));
@@ -226,26 +226,27 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                                     margin: const EdgeInsets.all(1.0),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: Dismissible(
-                                        key: UniqueKey(),
-                                        background: const BackgroundWidget(
-                                          alignment:
-                                              AlignmentDirectional.centerStart,
-                                          padding: 10,
-                                        ),
-                                        secondaryBackground:
-                                            const BackgroundWidget(
-                                          alignment:
-                                              AlignmentDirectional.centerEnd,
-                                          padding: 10,
-                                        ),
-                                        onDismissed: (direction) =>
-                                            Provider.of<Notifier>(context)
-                                                .deleteImagePath(index),
-                                        child: Image.file(
-                                          File(value.list[index]),
-                                          fit: BoxFit.cover,
-                                        ),
+                                      child: Stack(
+                                        children: [
+                                          Image.file(
+                                            File(value.list[index]),
+                                            fit: BoxFit.cover,
+                                          ),
+                                          Positioned(
+                                            child: IconButton(
+                                              icon: Icon(
+                                                Icons.close,
+                                                color: Colors.black,
+                                              ),
+                                              onPressed: () =>
+                                                  Provider.of<Notifier>(context,
+                                                          listen: false)
+                                                      .deleteImagePath(index),
+                                            ),
+                                            right: -5,
+                                            top: -5,
+                                          )
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -313,7 +314,7 @@ class BuildDescription extends StatelessWidget {
     );
   }
 
-  _launchURL(String value) async {
+  Future<void> _launchURL(String value) async {
     if (await canLaunch(value)) {
       await launch(value);
     } else {

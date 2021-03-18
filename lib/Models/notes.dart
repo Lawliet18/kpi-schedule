@@ -21,7 +21,7 @@ class Notes {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
+    final data = <String, dynamic>{};
     data['lesson_id'] = lessonId;
     data['notes_date'] = dateNotes;
     data['description'] = description;

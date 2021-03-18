@@ -1,7 +1,8 @@
-import 'package:schedule_kpi/Models/lessons.dart';
-import 'package:schedule_kpi/save_data/table.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../Models/lessons.dart';
+import 'table.dart';
 
 class DBLessons implements Table {
   DBLessons._();
@@ -52,9 +53,9 @@ class DBLessons implements Table {
   Future<List<Lessons>> select() async {
     final db = await database;
     final res = await db!.query(table);
-    final List<Lessons> list = res.isNotEmpty
+    final list = res.isNotEmpty
         ? res.map<Lessons>((json) => Lessons.fromJson(json)).toList()
-        : [];
+        : <Lessons>[];
     return list;
   }
 

@@ -1,8 +1,9 @@
 import 'package:path/path.dart';
-import 'package:schedule_kpi/Models/teacher_schedule_model.dart';
-import 'package:schedule_kpi/save_data/table.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common/sqlite_api.dart';
+
+import '../Models/teacher_schedule_model.dart';
+import 'table.dart';
 
 class DBTeacherSchedule with Table {
   DBTeacherSchedule._();
@@ -52,9 +53,9 @@ class DBTeacherSchedule with Table {
   Future<List<TeacherSchedules>> select() async {
     final db = await database;
     final res = await db!.query(table);
-    final List<TeacherSchedules> list = res.isNotEmpty
+    final list = res.isNotEmpty
         ? res.map((json) => TeacherSchedules.fromJson(json)).toList()
-        : [];
+        : <TeacherSchedules>[];
     return list;
   }
 
