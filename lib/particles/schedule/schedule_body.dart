@@ -62,6 +62,7 @@ class LoadFromInternet extends StatefulWidget {
 
 class _LoadFromInternetState extends State<LoadFromInternet> {
   final AssetImage imgOnErrorLoad = AssetImage('assets/img/sad.png');
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
