@@ -41,7 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectionProblem":
             MessageLookupByLibrary.simpleMessage("Problem with connection"),
         "correctInputGroup":
-            MessageLookupByLibrary.simpleMessage("Input Your group correct"),
+            MessageLookupByLibrary.simpleMessage("Don't have this data"),
         "createNotes": MessageLookupByLibrary.simpleMessage("Create Notes"),
         "currentWeek": MessageLookupByLibrary.simpleMessage("Current week"),
         "darkTheme": MessageLookupByLibrary.simpleMessage("Dark Theme"),

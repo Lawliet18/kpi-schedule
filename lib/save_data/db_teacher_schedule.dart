@@ -27,7 +27,7 @@ class DBTeacherSchedule with Table {
   @override
   Future<Database> initDB() async {
     final documentDirectory = await getDatabasesPath();
-    final path = join(documentDirectory!, 'teacher_schedule_table.db');
+    final path = join(documentDirectory, 'teacher_schedule_table.db');
     return openDatabase(path, version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
 

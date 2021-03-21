@@ -18,12 +18,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late String autocompleteText;
   bool ifOpen = false;
+  final KeyboardVisibilityController keyboardVisibilityController =
+      KeyboardVisibilityController();
 
   @override
   void initState() {
     super.initState();
-
-    final keyboardVisibilityController = KeyboardVisibilityController();
     keyboardVisibilityController.onChange.listen((visible) {
       ifOpen = visible;
     });

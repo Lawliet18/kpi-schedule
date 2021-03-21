@@ -41,7 +41,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectionProblem":
             MessageLookupByLibrary.simpleMessage("Проблеми с соединением"),
         "correctInputGroup":
-            MessageLookupByLibrary.simpleMessage("Введи свою группу правильно"),
+            MessageLookupByLibrary.simpleMessage("Нет этих данных"),
         "createNotes": MessageLookupByLibrary.simpleMessage("Создать заметку"),
         "currentWeek": MessageLookupByLibrary.simpleMessage("Текущая неделя"),
         "darkTheme": MessageLookupByLibrary.simpleMessage("Тёмная тема"),

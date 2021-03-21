@@ -41,12 +41,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "confirm": MessageLookupByLibrary.simpleMessage("Підтвердити"),
         "connectionProblem":
             MessageLookupByLibrary.simpleMessage("Проблема з підключенням"),
-        "correctInputGroup": MessageLookupByLibrary.simpleMessage(
-            " Введи свою групу правильно Введи свою групу правильно"),
+        "correctInputGroup":
+            MessageLookupByLibrary.simpleMessage("Немає цих даних"),
         "createNotes": MessageLookupByLibrary.simpleMessage("Створити нотаток"),
         "currentWeek": MessageLookupByLibrary.simpleMessage("Поточний тиждень"),
         "darkTheme": MessageLookupByLibrary.simpleMessage("Темна тема"),
-        "dontKnow": MessageLookupByLibrary.simpleMessage("Не знаюНе знаю"),
+        "dontKnow": MessageLookupByLibrary.simpleMessage("Не знаю"),
         "firstLoading":
             MessageLookupByLibrary.simpleMessage("Перше завантаження "),
         "free": MessageLookupByLibrary.simpleMessage("Ви вільні"),
@@ -57,8 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Введіть свою групу\n(як в прикладі)"),
         "images": MessageLookupByLibrary.simpleMessage("Зображення"),
         "languageChange": MessageLookupByLibrary.simpleMessage("Змінити мову"),
-        "loadError": MessageLookupByLibrary.simpleMessage(
-            " Не завантажується Не завантажується"),
+        "loadError": MessageLookupByLibrary.simpleMessage(" Не завантажується"),
         "monday": MessageLookupByLibrary.simpleMessage("Понеділок"),
         "myGroup": MessageLookupByLibrary.simpleMessage("Моя група"),
         "no": MessageLookupByLibrary.simpleMessage("Ні"),

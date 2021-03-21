@@ -19,7 +19,7 @@ class DBLessons implements Table {
   @override
   Future<Database> initDB() async {
     final documentsDirectory = await getDatabasesPath();
-    final path = join(documentsDirectory!, "lessons_table.db");
+    final path = join(documentsDirectory, "lessons_table.db");
     return openDatabase(path, version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
 
