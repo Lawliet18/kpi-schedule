@@ -21,7 +21,7 @@ class DBTeacherSchedule with Table {
   @override
   Future<void> delete() async {
     final db = await database;
-    db!.delete(table);
+    await db!.delete(table);
   }
 
   @override
@@ -33,7 +33,7 @@ class DBTeacherSchedule with Table {
 
   @override
   Future<void> onCreate(Database db, int version) async {
-    await db.execute("""
+    await db.execute('''
       CREATE TABLE $table (
         lesson_id TEXT PRIMARY KEY,
         day_name TEXT,
@@ -46,7 +46,7 @@ class DBTeacherSchedule with Table {
         time_start TEXT,
         time_end TEXT,
         groups TEXT
-        ) """);
+        ) ''');
   }
 
   @override
@@ -67,6 +67,6 @@ class DBTeacherSchedule with Table {
   Future<void> update(TeacherSchedules teachersSchedules) async {
     final db = await database;
     await db!.update(table, teachersSchedules.toJson(),
-        where: "lesson_id = ?", whereArgs: [teachersSchedules.lessonId]);
+        where: 'lesson_id = ?', whereArgs: [teachersSchedules.lessonId]);
   }
 }

@@ -29,7 +29,7 @@ class _TeacherScheduleWidgetState extends State<TeacherScheduleWidget> {
       'Вівторок',
       'Середа',
       'Четвер',
-      "П’ятниця",
+      'П’ятниця',
       'Субота'
     ];
     final list = listUA

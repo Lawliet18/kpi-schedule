@@ -27,13 +27,13 @@ class TeacherSchedules {
 
   factory TeacherSchedules.fromJson(Map<String, dynamic> json) {
     final groups = <String>[];
-    if (json['groups'] != null && json["groups"] is List<dynamic>) {
+    if (json['groups'] != null && json['groups'] is List<dynamic>) {
       json['groups'].forEach((v) {
         groups.add(v['group_full_name'] as String);
       });
     }
-    if (json["groups"] is String) {
-      groups.add(json["groups"] as String);
+    if (json['groups'] is String) {
+      groups.add(json['groups'] as String);
     }
     return TeacherSchedules(
       lessonId: json['lesson_id'],

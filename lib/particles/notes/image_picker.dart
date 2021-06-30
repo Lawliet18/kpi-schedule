@@ -41,57 +41,55 @@ class CustomImagePicker {
 
   Future<void> _displayPickImageDialog(BuildContext context) {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(S.of(context).cameraParameters),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    selectMethod(ImageSource.camera, context)
-                        .then((value) => Navigator.pop(context));
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.camera,
-                        size: 30,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(S.of(context).camera,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                          ))
-                    ],
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(S.of(context).cameraParameters),
+          content: Wrap(
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  selectMethod(ImageSource.camera, context)
+                      .then((value) => Navigator.pop(context));
+                },
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.camera,
+                    size: 30,
+                  ),
+                  title: Text(
+                    S.of(context).camera,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    selectMethod(ImageSource.gallery, context)
-                        .then((value) => Navigator.pop(context));
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.image,
-                        size: 30,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(S.of(context).gallery,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                          ))
-                    ],
+              ),
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  selectMethod(ImageSource.gallery, context)
+                      .then((value) => Navigator.pop(context));
+                },
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.image,
+                    size: 30,
                   ),
-                )
-              ],
-            ),
-          );
-        });
+                  title: Text(
+                    S.of(context).gallery,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 }

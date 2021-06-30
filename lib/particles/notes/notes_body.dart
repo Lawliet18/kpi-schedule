@@ -231,7 +231,7 @@ class _MyAnimatedListState extends State<MyAnimatedList> {
     );
 
     // show the dialog
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) {
         return alert;

@@ -69,8 +69,7 @@ class LoadingFromInternet extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        final List<Teachers> dataFromInternet =
-            snapshot.data! as List<Teachers>;
+        final dataFromInternet = snapshot.data! as List<Teachers>;
         if (snapshot.connectionState == ConnectionState.none) {
           return Center(
             child: Text(S.of(context).loadError),
@@ -155,7 +154,7 @@ class _BuildListState extends State<BuildList> {
               child: CircularProgressIndicator(),
             );
           default:
-            throw "teacherSchedule";
+            throw 'teacherSchedule';
         }
       },
     );

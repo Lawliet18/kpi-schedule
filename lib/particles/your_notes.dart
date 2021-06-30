@@ -86,7 +86,6 @@ class YourNotes extends StatelessWidget {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
-                  //width: MediaQuery.of(context).size.width * 0.5,
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(

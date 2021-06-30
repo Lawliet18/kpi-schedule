@@ -157,6 +157,6 @@ Week parseWeek(String value) {
     case '2':
       return Week.second;
     default:
-      throw "Unreachable";
+      throw 'Unreachable';
   }
 }

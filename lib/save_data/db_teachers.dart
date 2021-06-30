@@ -22,19 +22,19 @@ class DBTeachers with Table {
   @override
   Future<void> delete() async {
     final db = await database;
-    db!.delete(table);
+    await db!.delete(table);
   }
 
   @override
   Future<Database> initDB() async {
     final documentsDirectory = await getDatabasesPath();
-    final path = join(documentsDirectory, "teachers_table.db");
+    final path = join(documentsDirectory, 'teachers_table.db');
     return openDatabase(path, version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
 
   @override
   Future<void> onCreate(Database db, int version) async {
-    await db.execute("""
+    await db.execute('''
       CREATE TABLE $table (
         teacher_id TEXT PRIMARY KEY,
         teacher_name TEXT,
@@ -42,7 +42,7 @@ class DBTeachers with Table {
         teacher_short_name TEXT,
         teacher_url TEXT,
         teacher_rating TEXT
-        ) """);
+        ) ''');
   }
 
   @override
@@ -63,6 +63,6 @@ class DBTeachers with Table {
   Future<void> update(Teachers teachers) async {
     final db = await database;
     await db!.update(table, teachers.toJson(),
-        where: "teacher_id = ?", whereArgs: [teachers.teacherId]);
+        where: 'teacher_id = ?', whereArgs: [teachers.teacherId]);
   }
 }

@@ -109,15 +109,15 @@ class BuildBlock extends StatelessWidget {
                               height: 5,
                             ),
                             Text(
-                              "${S.of(context).teacherBlock} ${data.teacherName.isEmpty ? S.of(context).dontKnow : data.teacherName}",
+                              '${S.of(context).teacherBlock} ${data.teacherName.isEmpty ? S.of(context).dontKnow : data.teacherName}',
                               style: const TextStyle(fontSize: 15),
                             ),
                             const SizedBox(
                               height: 3,
                             ),
-                            Text("${S.of(context).type} ${data.lessonType}"),
+                            Text('${S.of(context).type} ${data.lessonType}'),
                             if (data.lessonRoom != '')
-                              Text("${S.of(context).room} ${data.lessonRoom}")
+                              Text('${S.of(context).room} ${data.lessonRoom}')
                             else
                               Container(),
                           ],
@@ -182,7 +182,7 @@ String shortDayName(Lessons data) {
       dayName = 'Сб';
       break;
     default:
-      throw "Unreachable";
+      throw 'Unreachable';
   }
   return dayName;
 }

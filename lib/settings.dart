@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'generated/l10n.dart';
 import 'main.dart';
@@ -22,7 +23,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  List<String> language = ["EN", "RU", "UK"];
+  List<String> language = ['EN', 'RU', 'UK'];
   String? _value;
   @override
   void initState() {
@@ -33,110 +34,133 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      appBar: AppBar(
-        title: Text(S.of(context).settings),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          CategoryName(name: S.of(context).myGroup, icon: Icons.people_outline),
-          const ChangeGroup(),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  S.of(context).currentWeek,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(S.of(context).settings),
+          centerTitle: true,
+        ),
+        body: Column(
+          children: [
+            CategoryName(
+                name: S.of(context).myGroup, icon: Icons.people_outline),
+            const ChangeGroup(),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    S.of(context).currentWeek,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
                   ),
-                ),
-                Text(
-                  context.read<Notifier>().currentWeek.toStr(),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
-                )
-              ],
+                  Text(
+                    context.read<Notifier>().currentWeek.toStr(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          CategoryName(name: S.of(context).colorSettings, icon: Icons.colorize),
-          const ChangeTheme(),
-          CategoryName(
-              name: S.of(context).anotherSettings, icon: Icons.library_books),
-          ClearButton(
-            text: S.of(context).clearNotes,
-            buttonText: S.of(context).clear,
-            onPressed: () {
-              DBNotes.db.delete();
-              DBLessons.db.deleteNotes();
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const Schedule(
-                        onSavedNotes: 2,
-                      )));
-            },
-          ),
-          ClearButton(
-            text: S.of(context).updateSchedule,
-            buttonText: S.of(context).refresh,
-            onPressed: () {
-              DBLessons.db.delete();
-              DBTeacherSchedule.db.delete();
-              DBTeachers.db.delete();
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const Schedule()));
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  S.of(context).languageChange,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _value,
-                    items: language
-                        .map((item) => DropdownMenuItem<String>(
-                              value: item,
-                              child: Text(item),
-                            ))
-                        .toList(),
-                    onChanged: (item) {
-                      switch (item) {
-                        case "EN":
-                          setLanguageButton(item);
-                          break;
-                        case "RU":
-                          setLanguageButton(item);
-                          break;
-                        case "UK":
-                          setLanguageButton(item);
-                          break;
-                        default:
-                          throw "Unreacheble";
-                      }
-                    },
-                  ),
-                )
-              ],
+            CategoryName(
+                name: S.of(context).colorSettings, icon: Icons.colorize),
+            const ChangeTheme(),
+            CategoryName(
+                name: S.of(context).anotherSettings, icon: Icons.library_books),
+            ClearButton(
+              text: S.of(context).clearNotes,
+              buttonText: S.of(context).clear,
+              onPressed: () {
+                DBNotes.db.delete();
+                DBLessons.db.deleteNotes();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const Schedule(
+                          onSavedNotes: 2,
+                        )));
+              },
             ),
-          ),
-        ],
+            ClearButton(
+              text: S.of(context).updateSchedule,
+              buttonText: S.of(context).refresh,
+              onPressed: () {
+                DBLessons.db.delete();
+                DBTeacherSchedule.db.delete();
+                DBTeachers.db.delete();
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Schedule()));
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    S.of(context).languageChange,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _value,
+                      items: language
+                          .map((item) => DropdownMenuItem<String>(
+                                value: item,
+                                child: Text(item),
+                              ))
+                          .toList(),
+                      onChanged: (item) {
+                        switch (item) {
+                          case 'EN':
+                            setLanguageButton(item);
+                            break;
+                          case 'RU':
+                            setLanguageButton(item);
+                            break;
+                          case 'UK':
+                            setLanguageButton(item);
+                            break;
+                          default:
+                            throw 'Unreacheble';
+                        }
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(Icons.info_outline),
+                  InkWell(
+                    onTap: _urlLauncher,
+                    child: Text(
+                      S.of(context).about + ' https://api.rozklad.org.ua',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   void setLanguageButton(String? item) {
@@ -147,6 +171,14 @@ class _SettingsState extends State<Settings> {
     });
 
     context.read<LanguageNotifier>().setLanguage(item.toLowerCase());
+  }
+
+  Future<void> _urlLauncher() async {
+    if (await canLaunch('https://api.rozklad.org.ua')) {
+      await launch('https://api.rozklad.org.ua');
+    } else {
+      throw 'Could not launch https://api.rozklad.org.ua';
+    }
   }
 }
 

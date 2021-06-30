@@ -19,13 +19,13 @@ class DBLessons implements Table {
   @override
   Future<Database> initDB() async {
     final documentsDirectory = await getDatabasesPath();
-    final path = join(documentsDirectory, "lessons_table.db");
+    final path = join(documentsDirectory, 'lessons_table.db');
     return openDatabase(path, version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
 
   @override
   Future<void> onCreate(Database db, int version) async {
-    await db.execute("""
+    await db.execute('''
     CREATE TABLE $table (
         lesson_id TEXT PRIMARY KEY,
         day_name TEXT,
@@ -40,7 +40,7 @@ class DBLessons implements Table {
         description TEXT,
         image_path TEXT,
         notes_date TEXT
-        )""");
+        )''');
   }
 
   Future<int> insert(Lessons newLessons) async {
@@ -68,27 +68,27 @@ class DBLessons implements Table {
   Future<int> update(Lessons lessons) async {
     final db = await database;
     final res = await db!.update(table, lessons.toJson(),
-        where: "lesson_id = ?", whereArgs: [lessons.lessonId]);
+        where: 'lesson_id = ?', whereArgs: [lessons.lessonId]);
     return res;
   }
 
   Future<int> updateNotes(Lessons lessons, String? description,
       String? imagePath, String? date) async {
     final db = await database;
-    final res = await db!.rawUpdate("""
+    final res = await db!.rawUpdate('''
     UPDATE $table
     SET description = ? , image_path = ? , notes_date = ?
     WHERE lesson_id = ?
-    """, [description, imagePath, date, lessons.lessonId]);
+    ''', [description, imagePath, date, lessons.lessonId]);
     return res;
   }
 
   Future<void> deleteNotes() async {
     final db = await database;
-    await db!.rawUpdate("""
+    await db!.rawUpdate('''
     UPDATE $table
     SET description = ? , image_path = ? , notes_date = ?
     WHERE notes_date IS NOT NULL
-    """, [null, null, null]);
+    ''', [null, null, null]);
   }
 }

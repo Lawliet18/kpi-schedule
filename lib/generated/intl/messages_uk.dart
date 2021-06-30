@@ -7,7 +7,7 @@
 // ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
 // ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
 // ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
-// ignore_for_file:unused_import, file_names
+// ignore_for_file:unused_import, file_names, avoid_escaping_inner_quotes
 
 import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
@@ -20,7 +20,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'uk';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, dynamic> _notInlinedMessages(_) => <String, Function>{
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "alertBody": MessageLookupByLibrary.simpleMessage(
             "Ви дійсно бажаете видалити цей нотаток"),
         "alertTitle": MessageLookupByLibrary.simpleMessage("Видалити нотаток"),
@@ -50,7 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "firstLoading":
             MessageLookupByLibrary.simpleMessage("Перше завантаження "),
         "free": MessageLookupByLibrary.simpleMessage("Ви вільні"),
-        "friday": MessageLookupByLibrary.simpleMessage("П'ятниця"),
+        "friday": MessageLookupByLibrary.simpleMessage("П\'ятниця"),
         "gallery": MessageLookupByLibrary.simpleMessage("Галерея"),
         "groups": MessageLookupByLibrary.simpleMessage("Групи:"),
         "homeScreenInput": MessageLookupByLibrary.simpleMessage(
@@ -75,7 +75,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "schedule": MessageLookupByLibrary.simpleMessage("Розклад"),
         "scheduleFor": MessageLookupByLibrary.simpleMessage("Розклад для"),
         "scheduleInternetError": MessageLookupByLibrary.simpleMessage(
-            "не завантажується розклад \n Перевірте интенет з'єднання"),
+            "не завантажується розклад \n Перевірте интенет з\'єднання"),
         "settings": MessageLookupByLibrary.simpleMessage("Налаштування"),
         "teacher": MessageLookupByLibrary.simpleMessage("Викладачі"),
         "teacherBlock": MessageLookupByLibrary.simpleMessage("Викладач:"),
@@ -90,6 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Оновити розклад"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Середа"),
         "yes": MessageLookupByLibrary.simpleMessage("Так"),
+        "about": MessageLookupByLibrary.simpleMessage("Дані з"),
         "yourDescription": MessageLookupByLibrary.simpleMessage("Опис")
       };
 }

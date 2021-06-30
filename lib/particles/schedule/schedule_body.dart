@@ -169,7 +169,7 @@ class BuildLessons extends StatelessWidget {
       'Вівторок',
       'Середа',
       'Четвер',
-      "П’ятниця",
+      'П’ятниця',
       'Субота'
     ];
     return Consumer<Notifier>(

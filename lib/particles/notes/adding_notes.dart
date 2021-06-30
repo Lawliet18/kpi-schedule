@@ -96,7 +96,7 @@ class _AddingNotesState extends State<AddingNotes> {
     final list = Provider.of<Notifier>(context, listen: false).list;
     final images = list.join(' ');
     final date = DateTime.now();
-    final time = "${date.day} ${date.month}";
+    final time = '${date.day} ${date.month}';
     DBLessons.db.updateNotes(data, text, images, time);
     if (widget.data.dateNotes != null) {
       DBNotes.db.updateNotes(data, text, images, time);
@@ -233,6 +233,8 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                                             fit: BoxFit.cover,
                                           ),
                                           Positioned(
+                                            right: -5,
+                                            top: -5,
                                             child: IconButton(
                                               icon: Icon(
                                                 Icons.close,
@@ -243,8 +245,6 @@ class _BuildListOfDataState extends State<BuildListOfData> {
                                                           listen: false)
                                                       .deleteImagePath(index),
                                             ),
-                                            right: -5,
-                                            top: -5,
                                           )
                                         ],
                                       ),

@@ -7,7 +7,7 @@
 // ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
 // ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
 // ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
-// ignore_for_file:unused_import, file_names
+// ignore_for_file:unused_import, file_names, avoid_escaping_inner_quotes
 
 import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
@@ -20,7 +20,7 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, dynamic> _notInlinedMessages(_) => <String, Function>{
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "alertBody": MessageLookupByLibrary.simpleMessage(
             "Are you realy want to delete this note?"),
         "alertTitle": MessageLookupByLibrary.simpleMessage("Delete note"),
@@ -41,11 +41,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "connectionProblem":
             MessageLookupByLibrary.simpleMessage("Problem with connection"),
         "correctInputGroup":
-            MessageLookupByLibrary.simpleMessage("Don't have this data"),
+            MessageLookupByLibrary.simpleMessage("Don\'t have this data"),
         "createNotes": MessageLookupByLibrary.simpleMessage("Create Notes"),
         "currentWeek": MessageLookupByLibrary.simpleMessage("Current week"),
         "darkTheme": MessageLookupByLibrary.simpleMessage("Dark Theme"),
-        "dontKnow": MessageLookupByLibrary.simpleMessage("Don't know"),
+        "dontKnow": MessageLookupByLibrary.simpleMessage("Don\'t know"),
         "firstLoading":
             MessageLookupByLibrary.simpleMessage("First loading..."),
         "free": MessageLookupByLibrary.simpleMessage("You are free"),
@@ -57,7 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "images": MessageLookupByLibrary.simpleMessage("Images"),
         "languageChange":
             MessageLookupByLibrary.simpleMessage("Change Language"),
-        "loadError": MessageLookupByLibrary.simpleMessage("Can't load"),
+        "loadError": MessageLookupByLibrary.simpleMessage("Can\'t load"),
         "monday": MessageLookupByLibrary.simpleMessage("Monday"),
         "myGroup": MessageLookupByLibrary.simpleMessage("my Group"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
@@ -75,7 +75,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "schedule": MessageLookupByLibrary.simpleMessage("Schedule"),
         "scheduleFor": MessageLookupByLibrary.simpleMessage("Schedule for"),
         "scheduleInternetError": MessageLookupByLibrary.simpleMessage(
-            // ignore: lines_longer_than_80_chars
             "Cannot load your schedule.\nPlease check your internet connection."),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "teacher": MessageLookupByLibrary.simpleMessage("Teachers"),
@@ -91,6 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Update Schedule"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Wednesday"),
         "yes": MessageLookupByLibrary.simpleMessage("Yes"),
+        "about": MessageLookupByLibrary.simpleMessage("Data from"),
         "yourDescription":
             MessageLookupByLibrary.simpleMessage("Your description")
       };

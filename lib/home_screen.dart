@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: <Widget>[
                 AnimatedCrossFade(
                     firstChild:
-                        const Image(image: AssetImage("assets/img/logo.png")),
+                        const Image(image: AssetImage('assets/img/logo.png')),
                     secondChild: Container(),
                     crossFadeState: !ifOpen
                         ? CrossFadeState.showFirst

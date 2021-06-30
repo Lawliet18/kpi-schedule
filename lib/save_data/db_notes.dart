@@ -27,13 +27,13 @@ class DBNotes implements Table {
   @override
   Future<Database> initDB() async {
     final documentsDirectory = await getDatabasesPath();
-    final path = join(documentsDirectory, "notes.db");
+    final path = join(documentsDirectory, 'notes.db');
     return openDatabase(path, version: 1, onOpen: (db) {}, onCreate: onCreate);
   }
 
   @override
   Future<void> onCreate(Database db, int version) async {
-    await db.execute("""
+    await db.execute('''
     CREATE TABLE $table (
         lesson_id TEXT PRIMARY KEY,
         day_name TEXT,
@@ -49,7 +49,7 @@ class DBNotes implements Table {
         image_path TEXT,
         notes_date TEXT
       )
-    """);
+    ''');
   }
 
   @override
@@ -74,15 +74,15 @@ class DBNotes implements Table {
   Future<void> updateNotes(Lessons lessons, String? description,
       String? imagePath, String? date) async {
     final db = await database;
-    await db!.rawUpdate("""
+    await db!.rawUpdate('''
     UPDATE $table
     SET description = ? , image_path = ? , notes_date = ?
     WHERE lesson_id = ?
-    """, [description, imagePath, date, lessons.lessonId]);
+    ''', [description, imagePath, date, lessons.lessonId]);
   }
 
   Future<void> deleteNote(Lessons lessons) async {
     final db = await database;
-    db!.delete(table, where: "lesson_id = ${lessons.lessonId}");
+    await db!.delete(table, where: 'lesson_id = ${lessons.lessonId}');
   }
 }

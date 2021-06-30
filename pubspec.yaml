@@ -26,6 +26,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  pedantic: ^1.11.1
 
 flutter:
   generate: true
@@ -41,4 +42,4 @@ flutter:
       fonts:
         - asset: assets/fonts/DniproCity-Bold.ttf
 flutter_intl:
-  enabled: false
+  enabled: true

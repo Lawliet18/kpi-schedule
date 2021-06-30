@@ -35,13 +35,13 @@ Iterable<Groups> groupFromJson(List parsedData) =>
     parsedData.map((json) => Groups.fromJson(json));
 
 Future<String> apiRequest(String url, Map jsonMap) async {
-  HttpClient httpClient = new HttpClient();
-  HttpClientRequest request = await httpClient.postUrl(Uri.parse(url));
+  final httpClient = HttpClient();
+  final request = await httpClient.postUrl(Uri.parse(url));
   request.headers.set('content-type', 'application/json');
   request.add(utf8.encode(json.encode(jsonMap)));
-  HttpClientResponse response = await request.close();
+  final response = await request.close();
   if (response.statusCode == 200) {
-    String reply = await response.transform(utf8.decoder).join();
+    final reply = await response.transform(utf8.decoder).join();
     httpClient.close();
     return reply;
   }
